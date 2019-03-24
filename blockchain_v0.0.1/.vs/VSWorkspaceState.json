@@ -1,0 +1,16 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\chaincode",
+    "\\core",
+    "\\crypto",
+    "\\crypto\\keys",
+    "\\ledger_interface",
+    "\\network_interface",
+    "\\network_interface\\event_socket",
+    "\\network_interface\\login_socket",
+    "\\worldState"
+  ],
+  "SelectedNode": "\\worldState\\client_WS.py",
+  "PreviewInSolutionExplorer": false
+}

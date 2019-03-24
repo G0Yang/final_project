@@ -1,0 +1,40 @@
+{
+  "CHID": "chain00124001",
+  "chains": [
+    {
+      "header": {
+        "version": "0.0.1",
+        "blockNumber": 0,
+        "timestamp": 1553424838.9505904,
+        "previousBlockHash": ""
+      },
+      "body": [
+        {
+          "TXID": "None",
+          "timeStamp": 1553424838.9515748,
+          "name": "None",
+          "T_Hash": "None",
+          "size": 77
+        }
+      ],
+      "B_hash": "None",
+      "size": 319,
+      "B_Hash": "5C5BF808C63F30DD8C6F7D7234A7FF48196407C9D27C6FC5AF99B6831CFA3D4C"
+    }
+  ],
+  "C_Hash": "90FC3BBB833BD992EFDB8F70D88407BC3576B11FE402F640CD60C5BFFADCA39A",
+  "timeStamp": 1553424838.9427686,
+  "metadata": {
+    "Version": "latest",
+    "CommitSHA": "development build",
+    "BaseVersion": "0.0.1",
+    "BaseDockerLabel": "None",
+    "DockerNamespace": "None",
+    "BaseDockerNamespace": "None",
+    "Experimental": "True",
+    "Company": "Kunsan University",
+    "MadeBy": "Kim Gi Young",
+    "MakerURL": "https://chgoyang.blogspot.com/",
+    "mspAddress": "1.250.137.74"
+  }
+}

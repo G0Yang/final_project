@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+message Transaction {
+    string data = 1;
+}
+
+service Maketx {
+    rpc maketx(Transaction) returns (Transaction) {}
+}

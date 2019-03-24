@@ -1,0 +1,52 @@
+{
+  "type": "contract",
+
+  "contractname": "jn4583nh226632",
+
+  "owner": {
+    "ID": "creatorID1",
+    "name": "creatorName1",
+    "key": "prikey1",
+    "priHash": "proHash1"
+  },
+
+  "contractList": [
+    {
+      "ID": "creatorID1",
+      "name": "creatorName1",
+      "key": "pubkey1",
+      "priHash": "proHash1"
+    },
+
+    {
+      "ID": "creatorID2",
+      "name": "creatorName2",
+      "key": "pubkey2",
+      "priHash": "proHash2"
+    },
+
+    {
+      "ID": "creatorID3",
+      "name": "creatorName3",
+      "key": "pubkey3",
+      "priHash": "proHash3"
+    },
+
+    {
+      "ID": "creatorID4",
+      "name": "creatorName4",
+      "key": "pubkey4",
+      "priHash": "proHash4"
+    }
+
+  ],
+
+  "product": {
+    "name": "egg",
+    "price": "0",
+    "eventType": "None"
+
+  },
+
+  "event": ["production", "send", "recive", "sell"]
+}

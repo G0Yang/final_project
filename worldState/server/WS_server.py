@@ -27,48 +27,64 @@ class worldStateHandler(threading.Thread):
     def run(self):
         try:
             while self.running:
-                argvList = self.Q.get()
+                HOST, conn, addr, argv = self.Q.get()
 
-                if argvList[0] == self.HOST:
-                    if argvList[3]['type'] == 'loginAck':
-                        argvList[1].sendall(str(getUserChains(argvList[3]['ID'])).encode())
-                        lastBlockHash = argvList[1].recv(1024*1024).decode()
-                        lastBlockHash = ast.literal_eval(lastBlockHash)
-
-                        WSLastBlockHash = {}
-
-                        for i in lastBlockHash:
-                            block = getlastBlock(ID = argvList[3]['ID'], CHID = i)
-                            WSLastBlockHash[i] = block['B_Hash']
+                # 매개변수에 type가 없으면 종료
+                if 'type' not in argv:
+                    conn.close()
+                    continue
 
 
-                        if isUserOnline(argvList[3]['ID']) == False:
-                            if WSLastBlockHash == lastBlockHash and login(argvList[3]['ID'], argvList[3]['PW']) == "로그인 완료":
-                                argvList[1].sendall("True".encode())
-                            else:
-                                argvList[1].sendall("False".encode())
-                        else:
-                            argvList[1].sendall("False".encode())
-                        pass
-                    if argvList[3]['type'] == 'logoutAck':
-                        if logout(argvList[3]['ID']) == True:
-                            argvList[1].sendall("True".encode())
-                        else:
-                            argvList[1].sendall("False".encode())
-                        #print(argvList)
+                # 로그인 과정
+                if argv['type'] == 'login' and "ID" in argv and "PW" in argv:
+                    S_chainList = getUserChains(argv['ID'])
+                    print(S_chainList, argv['ID'])
+                    conn.sendall((str(S_chainList).encode()))
+                    print('chain list send')
+                    C_chainList = conn.recv(1024*1024).decode()
+                    print(C_chainList, "recved")
+                    C_chainList = ast.literal_eval(C_chainList)
+
+                    WSLastBlockHash = {}
+
+                    for i in C_chainList:
+                        block = getlastBlock(ID = argv['ID'], CHID = i)
+                        WSLastBlockHash[i] = block['B_Hash']
+
+                    loginResult = login(argv['ID'], argv['PW'])
+
+                    if WSLastBlockHash == C_chainList and loginResult:
+                        conn.sendall("True".encode())
+                    else:
+                        conn.sendall("False".encode())
+
+                # 로그아웃 과정
+                if argv['type'] == 'logout' and "ID" in argv:
+                    print("시작")
+                    if logout(argv['ID']):
+                        conn.sendall("True".encode())
+                        print(True)
+                    else:
+                        conn.sendall("False".encode())
+                        print(False)
+
+                # 이벤트 과정
+                if argv['type'] == "event":
                     pass
-                if argvList[0] == "localhost":
+
+                # 로컬 요청
+                if HOST == "localhost":
                     pass
                 
+                conn.close()
 
 
 
 
 
 
-
-        except:
-            pass
+        except Exception as e:
+            print(e)
         return
 
     def stop(self):
@@ -140,8 +156,10 @@ class worldStateServer(threading.Thread): # server
 if __name__ == '__main__':
     try:
         threads = []
-
-        threads.append()
+        
+        threads.append(worldStateHandler())
+        threads.append(databaseServer())
+        threads.append(worldStateServer())
 
         for i in threads:
             print('start', i)

@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\blockchain_v0.0.1",
+    "\\blockchain_v0.0.1\\network_interface",
+    "\\blockchain_v0.0.1\\network_interface\\event_socket",
+    "\\worldState"
+  ],
+  "SelectedNode": "\\blockchain_v0.0.1\\peer_run.py",
+  "PreviewInSolutionExplorer": false
+}

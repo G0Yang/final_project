@@ -18,7 +18,7 @@ def login(ID = '', PW = ''):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         login = {
-            'type' : 'loginAck',
+            'type' : 'login',
             'ID' : ID,
             'PW' : PW
             }
@@ -26,6 +26,7 @@ def login(ID = '', PW = ''):
         
         chainList = s.recv(1024*1024).decode()
         chainList = ast.literal_eval(chainList)
+        print('get chain list', chainList)
 
         localChainList = listup()
 
@@ -34,8 +35,12 @@ def login(ID = '', PW = ''):
         for i in chainList:
             chain = findContract(i)
             lastBlockHash[i] = chain['chains'][len(chain['chains'])-1]['B_Hash']
+        
+        print(lastBlockHash)
 
         s.sendall(str(lastBlockHash).encode())
+
+        print('send blockHash')
 
         result = s.recv(1024).decode()
         return result
@@ -45,7 +50,7 @@ def logout(ID = ""):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
         logout = {
-            'type' : 'logoutAck',
+            'type' : 'logout',
             'ID' : ID
             }
         s.sendall(str(logout).encode())
@@ -54,13 +59,30 @@ def logout(ID = ""):
 
     return
 
+def isOnline(ID = ''):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.connect((HOST, PORT))
+        isOnline = {
+            'type' : 'isOnline',
+            'ID' : ID
+            }
+        s.sendall(str(isOnline).encode())
+        result = s.recv(1024).decode()
+        return result
+    return
+
+
 
 if __name__ == '__main__':  
     try:
         ID = input('ID : ')
-        PW = input('PW : ')
-        result = login(ID = ID, PW = PW)
-        print(result, type(result))
+        result = logout(ID)
+        print(result)
+
+        #ID = input('ID : ')
+        #PW = input('PW : ')
+        #result = login(ID = ID, PW = PW)
+        #print(result, type(result))
     except Exception as e:
         print(e)
         pass

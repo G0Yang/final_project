@@ -15,7 +15,7 @@ adminPW = 'admin'
 def login(ID = "", PW = ""):
     try:
         if isUserOnline(ID) == True:
-            return "이미 온라인임"
+            return False
         else:
             db = getDatabase(runServer(URL, PORT, adminID, adminPW), "users")
             for item in db.view('view/login'):
@@ -23,7 +23,7 @@ def login(ID = "", PW = ""):
                     doc = db.get(item['id'])
                     doc['online'] = "online"
                     doc = db.save(doc)
-                    return "로그인 완료"
+                    return True
             
     except Exception as e:
         print(e)
@@ -33,7 +33,7 @@ def login(ID = "", PW = ""):
 def logout(ID = ""):
     try:
         if not isUserOnline(ID) == True:
-            return "온라인이 아닙니다."
+            return False
         db = getDatabase(runServer(URL, PORT, adminID, adminPW), "users")
         for item in db.view('view/userOnline'):
             if item['key'] == ID:
@@ -104,8 +104,8 @@ def isUserOnline(ID = ''):
 if __name__ == "__main__":
     #print(getlastBlock("asd00125", "qwe00125"))
     #print(isUserOnline("asd00125"))
-    #print(isUserOnline("asd00124"))
-    print(getUserChains("id00125"), "\n", type(getUserChains("id00125")))
+    print(isUserOnline("id00125"))
+    #print(getUserChains("id00125"), "\n", type(getUserChains("id00125")))
     #print(checkLastBlock("asd00125", "qwe00125", "F9F3E7874D43EAFB0619618951B0B91C57F4E24E857D528AF6F811BB0897EF93"))
     #print(login("asd00125","asd00125"))
     #print(login("asd00124","asd00124"))

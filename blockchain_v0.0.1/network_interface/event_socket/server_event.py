@@ -18,6 +18,9 @@ sys.path.append(os.path.dirname(__file__))
 from login_socket.client_login import login, logout
 from worldState.client_WS import eventHandler, argvDecoder
 
+def eventSelector(argv):
+    return
+
 class EventServer(threading.Thread): # server
     def __init__(self):
         threading.Thread.__init__(self)
@@ -38,24 +41,7 @@ class EventServer(threading.Thread): # server
                 argv = conn.recv(1024*1024).decode()
                 argv = ast.literal_eval(argv)
                 
-                if 'filename' in argv and 'filesize' in argv:
-                    data = conn.recv(argv['filesize'])
-                    print(data)
-                    with open("recv_" + argv['filename'], "wb") as f:
-                        f.write(data)
-                        Q_event.put((argv, data))
-                        continue
-                    
-                if 'ID' in  argv and 'PW' in argv:
-                    if 'TYPE' in argv:
-                        if argv['TYPE'] == "login":
-                            Q_event.put((argv, "login"))
-                else:
-                    if 'TYPE' in argv:
-                        if argv["TYPE"] == 'logout':
-                            Q_event.put((argv, "logout"))
-                    continue
-                
+                Q_event.put(argv)                
         return
 
     def stop(self):
@@ -67,7 +53,7 @@ class EventHandler(threading.Thread): # client
         threading.Thread.__init__(self)
         self.daemon = True
         self.running = True
-        self.online = False
+        self.loginState = False
         self.Identity = None
 
         return 
@@ -76,27 +62,46 @@ class EventHandler(threading.Thread): # client
         try:
             print('queue server start')
             while self.running:
-                argv, type = Q_event.get()
-                print('queue server', argv, "type", type)
+                argv = Q_event.get()
+                print('queue server')
 
-                if 'ID' in argv and 'PW' in argv:
-                    if type == 'login':
-                        result = login(ID = argv['ID'], PW = argv['PW'])
-                        print('로그인 결과', result)
-                        loginState = result
-                else:
-                    if type == "logout":
-                        print("로그아웃 시도")
-                        result = logout(ID = argv['ID'])
-                        print('로그아웃 결과 :', result)
-                        loginState = result
+                for i in argv:
+                    print(i, argv[i])
 
+                if not 'TYPE' in argv:
+                    continue
 
-                if not self.online:
+                if argv['TYPE'] == 'login':
+                    if self.loginState:
+                        print('이미 로그인이 되있음', argv['ID'])
+                        continue
+                    result = login(ID = argv['ID'], PW = argv['PW'])
+                    print('로그인 결과', result)
+                    result = ast.literal_eval(result)
+                    self.loginState = result
+                    self.Identity = argv['ID']
+
+                elif argv['TYPE'] == 'logout':
+                    if not self.loginState:
+                        print("로그인이 필요함")
+                        continue
+                    result = logout(ID = argv['ID'])
+                    print('로그아웃 결과', result)
+                    result = ast.literal_eval(result)
+                    self.loginState = not result
+
+                if not self.loginState:
+                    print('로그인 하십시오.')
+                    continue
+
+                if argv["TYPE"] == 'event':
+                    if 'filename' in argv:
+                        argv['filedata'] = open(argv['filename'], 'rb').read()
+                        argv['filesize'] = len(argv['filedata'])
                     pass
-                pass
-        except:
-            pass
+
+        except Exception as e:
+            print(e)
         return
 
     def stop(self):

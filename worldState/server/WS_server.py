@@ -13,6 +13,78 @@ from database.databaseHandler import *
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
 
+
+class P2PAgreementHandler(threading.Thread):
+    def __init__(self, Q):
+        threading.Thread.__init__(self)
+        self.daemon = True
+        self.running = True
+        self.HOST = s.getsockname()[0]
+
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+        self.sock.bind((self.HOST, 9999))
+        self.Q = Q
+
+        self.maxAgreementNumber = 20
+
+        self.connections = []
+
+        return 
+
+    def run(self):
+        try:
+            while self.running:
+                data, addr = self.sock.recvfrom(1024)
+                data = data.decode()
+                if not data in self.connections:
+                    self.connections.append((data, addr))
+                print(self.connections)
+        except Exception as e:
+            print(e)
+        return
+
+    
+    def makeOrderingList(self, hostNumder = 0):
+        if not type(hostNumder) == type(int()):
+            try:
+                print("int가 아님")
+                hostNumder = int(hostNumder)
+            except:
+                print("int 변환 실패")
+                return False
+        if hostNumder > self.maxAgreementNumber:
+            hostNumder = self.maxAgreementNumber
+        orderingList = []
+        while len(orderingList) < (hostNumder-1)/2:
+            num = random.randint(0, hostNumder)
+            if num not in orderingList:
+                orderingList.append(num)
+        orderingList.sort()
+        return orderingList
+
+    def orderingBindList(self, bindList = []):
+        if not type(bindList) == type(list()):
+            try:
+                print("list가 아님")
+                bindList = ast.literal_evel(bindList)
+            except:
+                print("list 변환 실패")
+                return False
+        orderingList = []
+        countList = makeOrderingList(len(bindList))
+        for i in countList:
+            orderingList.append(bindList[i])
+
+        if not len(orderingList) == len(countList):
+            return False
+
+        return orderingList
+
+    def stop(self):
+        print("P2PAgreementHandler END")
+        self.running = False
+
+
 class worldStateHandler(threading.Thread):
     def __init__(self, Q):
         threading.Thread.__init__(self)
@@ -91,7 +163,6 @@ class worldStateHandler(threading.Thread):
         print("worldStateHandler END")
         self.running = False
 
-
 class databaseServer(threading.Thread): # server
     def __init__(self, Q):
         threading.Thread.__init__(self)
@@ -160,6 +231,7 @@ if __name__ == '__main__':
         threads.append(worldStateHandler())
         threads.append(databaseServer())
         threads.append(worldStateServer())
+        threads.append(P2PAgreementHandler())
 
         for i in threads:
             print('start', i)

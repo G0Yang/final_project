@@ -6,7 +6,7 @@ import threading, time
 import sys, os
 import queue
 
-from server.WS_server import worldStateHandler, databaseServer, worldStateServer
+from server.WS_server import worldStateHandler, databaseServer, worldStateServer, P2PAgreementHandler
 
 Q = queue.Queue()
 
@@ -23,6 +23,7 @@ def main(argv):
     threads.append(worldStateHandler(Q))
     threads.append(databaseServer(Q))
     threads.append(worldStateServer(Q))
+    threads.append(P2PAgreementHandler(Q))
 
     for i in threads:
         i.start()

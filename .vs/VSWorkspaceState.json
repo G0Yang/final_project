@@ -4,8 +4,12 @@
     "\\blockchain_v0.0.1",
     "\\blockchain_v0.0.1\\network_interface",
     "\\blockchain_v0.0.1\\network_interface\\event_socket",
-    "\\worldState"
+    "\\blockchain_v0.0.1\\network_interface\\login_socket",
+    "\\MSP",
+    "\\worldState",
+    "\\worldState\\database",
+    "\\worldState\\server"
   ],
-  "SelectedNode": "\\blockchain_v0.0.1\\peer_run.py",
+  "SelectedNode": "\\worldState\\server\\WS_server.py",
   "PreviewInSolutionExplorer": false
 }

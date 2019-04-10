@@ -37,8 +37,28 @@ class PyJSON(object):
     
 
     def to_json(self, path = '', filename = '', data = {}):
-        with open(path + filename, 'w', encoding="utf-8") as make_file:
-            json.dump(data, make_file, ensure_ascii=False, indent="\t")
+        print(path)
+        print(filename)
+        try:
+            if 'filedata' in data and 'filename' in data:
+                print("파일 별도 저장 실행")
+                with open(path + data['filename'], 'wb') as f:
+                    f.write(data['filedata'])
+        except:
+            print("저장 실패")
+            data['filedata'] = False
+        else:
+            print("저장 성공")
+            data['filedata'] = True
+
+        try:
+            with open(path + filename, 'w', encoding="utf-8") as make_file:
+                print("파일을 제외한 데이터 json으로 저장")
+                json.dump(data, make_file, ensure_ascii=False, indent="\t")
+        except:
+            print("저장 실패")
+        else:
+            print("저장 성공")
         return 
 
     def from_json(self, path = '', filename = ''):

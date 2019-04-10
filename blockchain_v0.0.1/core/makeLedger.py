@@ -34,16 +34,24 @@ if __name__ == "__main__":
             "name" : "kim",
             "phone" : "010-1234-5678"
             }
-
+        data['ID'] = "id00125"
+        print(data)
+        print(11111111)
+        print()
         tx = maketx(data)
+        print(222222222222)
+        print(tx.to_dict())
+        print(3333333333333
+              )
         b = makeblock(tx.to_dict())
-        c = makechain(b.to_dict())
+        print(b.to_dict())
+        c = makechain(b)
         print(type(c))
         print(c)
 
-        c.to_json(filename = "test.json", data = c.to_dict())
+        #c.to_json(filename = "test.json", data = c.to_dict())
 
 
-        print(listup())
+        #print(listup())
     except Exception as e:
         print(e)

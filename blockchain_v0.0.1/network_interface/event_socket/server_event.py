@@ -17,9 +17,19 @@ sys.path.append(os.path.dirname(__file__))
 
 from login_socket.client_login import login, logout
 from worldState.client_WS import eventHandler, argvDecoder
+from core.makeLedger import *
 
-def eventSelector(argv):
-    return
+def fileread(argv):
+    if 'filename' in argv:
+        with open(argv['filename'], 'rb') as file:
+            filedata = file.read()
+            filesize = len(filedata)
+            return {
+                "filename" : argv['filename'],
+                "filedata" : filedata,
+                "filesize" : filesize
+                }
+    return False
 
 class EventServer(threading.Thread): # server
     def __init__(self):
@@ -39,6 +49,7 @@ class EventServer(threading.Thread): # server
                 s.listen(0)
                 conn, addr = s.accept()
                 argv = conn.recv(1024*1024).decode()
+                print("------------", type(argv), argv)
                 argv = ast.literal_eval(argv)
                 
                 Q_event.put(argv)                
@@ -59,9 +70,9 @@ class EventHandler(threading.Thread): # client
         return 
 
     def run(self):
-        try:
-            print('queue server start')
-            while self.running:
+        print('queue server start')
+        while self.running:
+            try:
                 argv = Q_event.get()
                 print('queue server')
 
@@ -89,23 +100,45 @@ class EventHandler(threading.Thread): # client
                     print('로그아웃 결과', result)
                     result = ast.literal_eval(result)
                     self.loginState = not result
+                    self.Identity = None
 
                 if not self.loginState:
                     print('로그인 하십시오.')
                     continue
 
                 if argv["TYPE"] == 'event':
-                    if 'filename' in argv:
-                        argv['filedata'] = open(argv['filename'], 'rb').read()
-                        argv['filesize'] = len(argv['filedata'])
-                    pass
+                    # 파일 읽기 argv[filename]
+                    data = fileread(argv)
+                    print("파일 읽기 :", type(data))
+                    # 트랜잭션 생성
+                    if type(data) is not type(dict()):
+                        data = argv
+                    data["ID"] = self.Identity
+                    
+                    tx = maketx(data)
+                    
+                    print("-------------------------")
+                    
+                    print(type(tx), type(tx.to_dict()))
 
-        except Exception as e:
-            print(e)
+                    tx.to_json(path = "C:\\Users\\milk1\\Downloads\\test\\", filename = "test_tx.json", data = tx.to_dict())
+                    
+
+
+                    print("-------------------------")
+                    # 합의 - fms에게 합의 ip리스트를 받아와 p2p 수행
+                    # 체인 저장 - 합의 결과에 따라 체인에 추가함.
+                    # 마지막 블록 업로드 - WS에 업로드
+                    pass
+                
+            except Exception as e:
+                print(e)
         return
 
     def stop(self):
         print("eventHandler end")
+        if self.loginState:
+            print("강제 로그아웃 실행", logout(ID = self.Identity))
         self.running = False
 
 if __name__ == '__main__':

@@ -17,7 +17,7 @@ def argvDecoder(argv):
             result['TYPE'] = i.split('-type=')[1]
         if '-filename=' in i:
             result['filename'] = i.split('-filename=')[1]
-            result['filesize'] = len(open(result['filename'], 'rb').read())
+            #result['filesize'] = len(open(result['filename'], 'rb').read())
         
             #with open(result['filename'], 'rb') as r:
                 #result['file'] = r.read()
@@ -32,10 +32,10 @@ def eventHandler(argv): # client
         print(argv)
         if len(str(argv)) == 2:
             s.sendall("".encode())
-        if 'filename' in argv:
-            s.sendall(str(argv).encode())
-            with open(argv['filename'], 'rb') as filedata:
-                s.sendall(filedata.read())
+        #if 'filename' in argv:
+            #s.sendall(str(argv).encode())
+            #with open(argv['filename'], 'rb') as filedata:
+                #s.sendall(filedata.read())
         s.sendall(str(argv).encode())
 
     return

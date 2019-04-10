@@ -19,6 +19,7 @@ from login_socket.client_login import login, logout
 from worldState.client_WS import eventHandler, argvDecoder
 from core.makeLedger import *
 
+# 파일을 읽어서 dict로 반환해주는 함수
 def fileread(argv):
     if 'filename' in argv:
         with open(argv['filename'], 'rb') as file:
@@ -31,6 +32,7 @@ def fileread(argv):
                 }
     return False
 
+# 명령어를 받아들이는 소켓 서버 localhost
 class EventServer(threading.Thread): # server
     def __init__(self):
         threading.Thread.__init__(self)
@@ -59,6 +61,7 @@ class EventServer(threading.Thread): # server
         self.running = False
         return
 
+# 로컬 명령어를 Queue에서 받아와 수행하는 루틴
 class EventHandler(threading.Thread): # client
     def __init__(self):
         threading.Thread.__init__(self)
@@ -82,30 +85,8 @@ class EventHandler(threading.Thread): # client
                 if not 'TYPE' in argv:
                     continue
 
-                if argv['TYPE'] == 'login':
-                    if self.loginState:
-                        print('이미 로그인이 되있음', argv['ID'])
-                        continue
-                    result = login(ID = argv['ID'], PW = argv['PW'])
-                    print('로그인 결과', result)
-                    result = ast.literal_eval(result)
-                    self.loginState = result
-                    self.Identity = argv['ID']
-
-                elif argv['TYPE'] == 'logout':
-                    if not self.loginState:
-                        print("로그인이 필요함")
-                        continue
-                    result = logout(ID = argv['ID'])
-                    print('로그아웃 결과', result)
-                    result = ast.literal_eval(result)
-                    self.loginState = not result
-                    self.Identity = None
-
-                if not self.loginState:
-                    print('로그인 하십시오.')
-                    continue
-
+                self.login_out(argv)
+                
                 if argv["TYPE"] == 'event':
                     # 파일 읽기 argv[filename]
                     data = fileread(argv)
@@ -135,10 +116,44 @@ class EventHandler(threading.Thread): # client
                 print(e)
         return
 
+    
+    def login_out(self, argv):
+        try:
+            if argv['TYPE'] == 'login':
+                if self.loginState:
+                    print('이미 로그인이 되있음', argv['ID'])
+                    return False
+                result = login(ID = argv['ID'], PW = argv['PW'])
+                print('로그인 결과', result)
+                result = ast.literal_eval(result)
+                self.loginState = result
+                self.Identity = argv['ID']
+
+            elif argv['TYPE'] == 'logout':
+                if not self.loginState:
+                    print("로그인이 필요함")
+                    return False
+                result = logout(ID = argv['ID'])
+                print('로그아웃 결과', result)
+                result = ast.literal_eval(result)
+                self.loginState = not result
+                self.Identity = None
+
+            if not self.loginState:
+                print('로그인 하십시오.')
+                return False
+        except Exception as e:
+            print(e)
+            return False
+        else:
+            return True
+        return False
+
     def stop(self):
         print("eventHandler end")
         if self.loginState:
-            print("강제 로그아웃 실행", logout(ID = self.Identity))
+            try: print("강제 로그아웃 실행", logout(ID = self.Identity))
+            except: pass
         self.running = False
 
 if __name__ == '__main__':

@@ -19,16 +19,13 @@
 # >> file upload done
 # >> event complete
 
-
 import threading, time
 import sys, os
 import queue
 
-
 from network_interface.event_socket.server_event import EventServer, EventHandler
 
 Q = queue.Queue()
-
 
 def chain_init(contractList = []):
     contract_list = []
@@ -44,9 +41,7 @@ def chain_init(contractList = []):
 
     return contract_list
 
-
 def main(argv):
-    
     threads = []
     
     threads.append(EventServer())
@@ -55,33 +50,30 @@ def main(argv):
     for i in threads:
         i.start()
 
-
-    print("main end")
-
     return threads
 
 if __name__ == "__main__":
-    thread = []
+    threads = []
     try:
-        thread = main(sys.argv)
+        threads = main(sys.argv)
         while True:
             time.sleep(10)
     except Exception as e:
         print('Exception')
-        for i in thread:
+        for i in threads:
             i.stop()
         print(e)
     except KeyboardInterrupt:
         print('Keyboard Interrupt')
-        for i in thread:
+        for i in threads:
             i.stop()
     except :
         print('Any Interrupt')
-        for i in thread:
+        for i in threads:
             i.stop()
     else:
         print('else')
-        for i in thread:
+        for i in threads:
             i.stop()
     print('feild end')
         

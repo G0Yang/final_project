@@ -136,38 +136,6 @@ class worldStateHandler(threading.Thread):
 
     def handler_global(self, conn, addr, argv):
         try:
-            # 로그인 과정
-            if argv['type'] == 'login' and "ID" in argv and "PW" in argv:
-                S_chainList = getUserChains(argv['ID'])
-                print(S_chainList, argv['ID'])
-                conn.sendall((str(S_chainList).encode()))
-                print('chain list send')
-                C_chainList = conn.recv(1024*1024).decode()
-                print(C_chainList, "recved")
-                C_chainList = ast.literal_eval(C_chainList)
-
-                WSLastBlockHash = {}
-
-                for i in C_chainList:
-                    block = getlastBlock(ID = argv['ID'], CHID = i)
-                    WSLastBlockHash[i] = block['B_Hash']
-
-                loginResult = login(argv['ID'], argv['PW'])
-
-                if WSLastBlockHash == C_chainList and loginResult:
-                    conn.sendall("True".encode())
-                else:
-                    conn.sendall("False".encode())
-
-            # 로그아웃 과정
-            if argv['type'] == 'logout' and "ID" in argv:
-                print("시작")
-                if logout(argv['ID']):
-                    conn.sendall("True".encode())
-                    print(True)
-                else:
-                    conn.sendall("False".encode())
-                    print(False)
 
             # 이벤트 과정
             if argv['type'] == "event":

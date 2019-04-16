@@ -11,6 +11,6 @@
     "\\worldState",
     "\\worldState\\server"
   ],
-  "SelectedNode": "\\blockchain_v0.0.1\\peer_run.py",
+  "SelectedNode": "\\blockchain_v0.0.1\\network_interface\\event_socket\\client_event.py",
   "PreviewInSolutionExplorer": false
 }

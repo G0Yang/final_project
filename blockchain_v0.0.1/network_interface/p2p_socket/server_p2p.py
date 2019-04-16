@@ -1,120 +1,172 @@
+
 # This Python file uses the following encoding: utf-8
 
-from threading import Thread, Lock
-import queue
-
-import socket, socketserver
-import sys, os, time, ast, random
+import logging
+import socket
+import threading, queue
+import sys, os, ast, time, random
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 sys.path.append(os.path.dirname(__file__))
 
-from getIP import getIP
+'''
+logger = logging.getLogger()
 
-from crypto.lib.libAES import libAES
+def p2p(ID = ''):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    host = HOST
+    sock.sendto(str(ID).encode(), (HOST, 9999))
 
-HOST = getIP()
-PORT = 14003
+    data, addr = sock.recvfrom(1024)
+    print('client received: {} {}'.format(addr, data))
+    addr = ast.literal_eval(data.decode())
+    #file = open('2019학사일정.pdf', 'rb').read()
+    file = "11111111\n-----".encode('utf-8')
+    sock.sendto(file, addr)
+    data, addr = sock.recvfrom(1024)
+    print('client received: {} {}'.format(addr, data))
 
-Q = queue.Queue()
+if __name__ == '__main__1':
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+    p2p("id00125")
+'''
 
-contract_return = ['jn4583nh226632', 'tmpp1z95nfx380']
-
-def switch(data = {}, conn = None, addr = None):
-    if data['type'] == 'loginSync':
-        pass
-    return False
-
-def thread_get():
-    while True:
-        print('thread_get init')
-        conn, addr = Q.get()
-
-        try:
-            data = conn.recv(1024*1024).decode()
-            data = ast.literal_eval(data)
+class P2PServer(threading.Thread):
+    def __init__(self, Queue):
+        threading.Thread.__init__(self)
+        self.daemon = True
+        self.running = True
+        self.Q = Queue
         
-            if type(data) is not type(dict()):
-                continue
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.HOST = "chgoyang.iptime.org"
+        self.HOST = "localhost"
+        self.PORT = 14101
+        self.sock.sendto(str( {"TYPE" : "first connect", "ID" : "id00124"} ).encode(), (self.HOST, self.PORT))
+        return
 
-            if 'type' in data:
-                result = switch(data = data, conn = conn, addr = addr)
+    def run(self):
+        while self.running:
+            try:
+                print('log : P2P server start', (self.HOST, self.PORT))
+                argv = self.sock.recvfrom(1024)
+                argv = ast.literal_evel(argv)
+                self.Q.put(argv)
+                pass
 
-            if not result:
-                continue
-        except Exception as e:
-            print(e)
-            continue
-        else:
-            Q.put((conn, addr))
+            
+            except Excpetion as e:
+                self.sock.sendto("first connect".encode(), (self.HOST, self.PORT))
+                print(e)                
+        return
 
-        print('thread_get end')
-
-    return
-
-
-def thread_put(HOST, PORT):
-    while True:
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.bind((HOST, PORT))
-            s.listen(0)
-            conn, addr = s.accept()
-            Q.put((conn, addr))
-
-
-            '''
-            msg = conn.recv(1024)
-            print(f'{msg.decode()}')
-            conn.sendall(msg)
-            conn.close()
-            '''
+    def stop(self):
+        self.running = False
+        return
 
 
-def runP2PServer(HOST = HOST, PORT = PORT):
-    #runServer(Host = HOST, Port  = PORT)
+# 명령어를 받아들이는 소켓 서버 localhost
+class EventServer(threading.Thread): # server
+    def __init__(self, Queue):
+        threading.Thread.__init__(self)
+        self.daemon = True
+        self.running = True
+        self.Q = Queue
+
+        self.HOST = 'localhost'
+        self.PORT = 14101
+        return
+
+    def run(self):
+        while self.running:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                print('log : local server start', (self.HOST, self.PORT))
+                s.bind((self.HOST, self.PORT))
+                s.listen(0)
+                conn, addr = s.accept()
+                argv = conn.recv(1024*1024).decode()
+                argv = ast.literal_eval(argv)
+                
+                self.Q.put(argv)            
+        return
+
+    def stop(self):
+        self.running = False
+        return
+
+# 로컬 명령어를 Queue에서 받아와 수행하는 루틴
+class EventHandler(threading.Thread): # client
+    def __init__(self, Queue):
+        threading.Thread.__init__(self)
+        self.daemon = True
+        self.running = True
+        self.Q = Queue
+        self.status = False
+        
+        return 
+
+    def run(self):
+        print('log : queue server start')
+        while self.running:
+            try:
+                argv = Q.get()
+                if not type(argv) == type(dict()):
+                    continue
+                
+                if "TYPE" in argv:
+                    if argv['TYPE'] == 'first connect':
+                        self.first_connenct(argv)
+
+                if not self.status:
+                    continue
+
+                
+            except Exception as e:
+                print(e)
+        return
+
+    def first_connect(self, argv):
+        self.status = True
+
     
-    threadPUT = Thread(target = thread_put, daemon = True, args = (HOST, PORT))
-    threadGET = Thread(target = thread_get, daemon = True)
 
-    threadPUT.start()
-    threadGET.start()
-
-    while True:
-        time.sleep(60*60*24)
-
-from urllib.request import urlopen
-import re
-def getPublicIp():
-    data = str(urlopen('http://checkip.dyndns.com/').read())
-    # data = '<html><head><title>Current IP Check</title></head><body>Current IP Address: 65.96.168.198</body></html>\r\n'
-
-    return re.compile(r'Address: (\d+\.\d+\.\d+\.\d+)').search(data)#.group(1)
+    def stop(self):
+        print("log : eventHandler end")
+        self.running = False
 
 if __name__ == '__main__':
-    print(socket.gethostbyname(socket.getfqdn()))
-    print(socket.getfqdn())
-    print(socket.gethostbyname(socket.gethostname()))
-    print(socket.gethostbyname_ex(socket.gethostname()))
-    
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    print(s.getsockname())
-    
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("255.255.255.255", 80))
-    print(s.getsockname())
+    try:
+        threads = []
+        Q = queue.Queue()
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("localhost", 80))
-    print(s.getsockname())
+        threads.append(EventServer(Q))
+        threads.append(EventHandler(Q))
+        threads.append(P2PServer(Q))
+        
 
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("google.com", 80))
-    print(s.getsockname())
+        for i in threads:
+            print('start', i)
+            i.start()
 
-    print(getPublicIp())
-
-
-
-    #runP2PServer(HOST = HOST, PORT = PORT)
+        time.sleep(60*60*24)
+        
+    except Exception as e:
+        print('Exception')
+        for i in threads:
+            i.stop()
+        print(e)
+    except KeyboardInterrupt:
+        print('Keyboard Interrupt')
+        for i in threads:
+            i.stop()
+    except :
+        print('Any Interrupt')
+        for i in threads:
+            i.stop()
+    else:
+        print('else')
+        for i in threads:
+            i.stop()
+    print('feild end')
+        

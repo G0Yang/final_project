@@ -11,6 +11,8 @@ import queue
 
 from server.WS_server import worldStateHandler, databaseServer, worldStateServer, P2PAgreementHandler
 
+from server.P2P_server import *
+
 Q = queue.Queue()
 
 # 여기에서 큐를 사용하는 이유는 작업간의 원자성을 유지하기 위함이다.
@@ -23,10 +25,11 @@ def main(argv):
     
     threads = []
     
-    threads.append(worldStateHandler(Q))
-    threads.append(databaseServer(Q))
-    threads.append(worldStateServer(Q))
-    threads.append(P2PAgreementHandler(Q))
+    #threads.append(worldStateHandler(Q)) # 명령어 처리를 위한 Queue호출 및 순환 루틴
+    #threads.append(databaseServer(Q)) # 외부 접속용 ip 서버
+    #threads.append(worldStateServer(Q)) # 내부 접속용localhost 서버
+    #threads.append(P2PAgreementHandler(Q)) # 합의 알고리즘을 수행하는 루틴
+
 
     for i in threads:
         i.start()

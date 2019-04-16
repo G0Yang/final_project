@@ -11,11 +11,8 @@ sys.path.append(os.path.dirname(__file__))
 from crypto.lib.libAES import libAES
 from chaincode.smartContract import *
 
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-s.connect(("8.8.8.8", 80))
-
-HOST = "192.168.10.81"
-HOST = s.getsockname()[0]
+HOST = "chgoyang.iptime.org"
+#HOST = "192.168.0.38"
 PORT = 14005
 
 def login(ID = '', PW = ''):
@@ -30,25 +27,19 @@ def login(ID = '', PW = ''):
         
         chainList = s.recv(1024*1024).decode()
         chainList = ast.literal_eval(chainList)
-        print('get chain list', chainList)
-
-        localChainList = listup()
-
+        
         lastBlockHash = {}
-
         for i in chainList:
             chain = findContract(i)
             lastBlockHash[i] = chain['chains'][len(chain['chains'])-1]['B_Hash']
-        
-        print(lastBlockHash)
 
         s.sendall(str(lastBlockHash).encode())
-
-        print('send blockHash')
-
         result = s.recv(1024).decode()
-        return result
-    return
+        if result == 'True':
+            return True
+        else:
+            return False
+    return False
 
 def logout(ID = ""):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -59,9 +50,11 @@ def logout(ID = ""):
             }
         s.sendall(str(logout).encode())
         result = s.recv(1024).decode()
+        result = ast.literal_eval(result)
+        s.close()
         return result
 
-    return
+    return False
 
 def isOnline(ID = ''):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -72,6 +65,7 @@ def isOnline(ID = ''):
             }
         s.sendall(str(isOnline).encode())
         result = s.recv(1024).decode()
+        s.close()
         return result
     return
 
@@ -79,14 +73,20 @@ def isOnline(ID = ''):
 
 if __name__ == '__main__':  
     try:
-        ID = input('ID : ')
-        result = logout(ID)
-        print(result)
-
-        #ID = input('ID : ')
-        #PW = input('PW : ')
-        #result = login(ID = ID, PW = PW)
-        #print(result, type(result))
+        type = input("1 : login\n2 : logout\n : ")
+        ID = 'id00124'
+        PW = 'pw00124'
+        if type == '1':
+            #ID = input('ID : ')
+            #PW = input('PW : ')
+            result = login(ID = ID, PW = PW)
+            print(result)
+        elif type == '2':
+            #ID = input('ID : ')
+            result = logout(ID = ID)
+            print(result)
+        else:
+            pass
     except Exception as e:
         print(e)
         pass

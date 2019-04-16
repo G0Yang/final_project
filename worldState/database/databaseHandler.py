@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(__file__))
 from couchDBHandler import *
 
 URL = 'localhost'
+#URL = "chgoyang.iptime.org"
 PORT = 5984
 adminID = 'admin'
 adminPW = 'admin'
@@ -102,10 +103,10 @@ def isUserOnline(ID = ''):
 
 
 if __name__ == "__main__":
-    #print(getlastBlock("asd00125", "qwe00125"))
+    print(getlastBlock("id00125", "pw00125"))
     #print(isUserOnline("asd00125"))
     print(isUserOnline("id00125"))
-    #print(getUserChains("id00125"), "\n", type(getUserChains("id00125")))
+    print(getUserChains("id00125"), "\n", type(getUserChains("id00125")))
     #print(checkLastBlock("asd00125", "qwe00125", "F9F3E7874D43EAFB0619618951B0B91C57F4E24E857D528AF6F811BB0897EF93"))
     #print(login("asd00125","asd00125"))
     #print(login("asd00124","asd00124"))

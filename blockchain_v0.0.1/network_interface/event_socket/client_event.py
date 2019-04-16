@@ -11,16 +11,24 @@ def argvDecoder(argv):
     for i in argv[1:]:
         if '-ID=' in i:
             result['ID'] = i.split('-ID=')[1]
-        if '-PW=' in i:
+        elif '-PW=' in i:
             result['PW'] = i.split('-PW=')[1]
-        if '-type=' in i:
+        elif '-type=' in i:
             result['TYPE'] = i.split('-type=')[1]
-        if '-filename=' in i:
-            result['filename'] = i.split('-filename=')[1]
+        #elif '-filename=' in i:
+            #result['filename'] = i.split('-filename=')[1]
             #result['filesize'] = len(open(result['filename'], 'rb').read())
         
             #with open(result['filename'], 'rb') as r:
                 #result['file'] = r.read()
+    
+    if 'ID' in result and 'PW' in result:
+        result['TYPE'] = 'login'
+        return result
+
+    if len(result) == 0:
+        return False
+
     return result
 
 def eventHandler(argv): # client

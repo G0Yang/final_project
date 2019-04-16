@@ -2,6 +2,9 @@
 
 # WS run.py
 
+# 마지막 블록 동기화
+
+
 import threading, time
 import sys, os
 import queue

@@ -20,47 +20,6 @@ PORT1 = 14005
 HOST = 'localhost'
 PORT = 14011
 
-def login(ID = '', PW = ''):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((HOST, PORT))
-
-        login = {
-            'type' : 'loginAck',
-            'ID' : ID,
-            'PW' : PW
-            }
-
-        s.sendall(str(login).encode())
-
-        chainList = s.recv(1024*1024).decode()
-        chainList = ast.literal_eval(chainList)
-
-        lastBlockHash = []
-        localChainList = listup()
-
-        if type(chainList) is not type(list()):
-            return False
-        else:
-            for i in chainList:
-                if i in localChainList:
-                    lastBlockHash.append(i)
-
-        print(localChainList)
-        
-
-
-def login1(ID = '', PW = ''):
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.connect((HOST1, PORT1))
-
-        login = {
-            'type' : 'loginAck',
-            'ID' : ID,
-            'PW' : PW
-            }
-
-        s.sendall(str(login).encode())
-        
 def decoder(argv):
     if not type(argv) == type(list()):
         return False

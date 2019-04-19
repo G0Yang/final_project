@@ -33,17 +33,18 @@ if __name__ == '__main__1':
 '''
 
 class P2PServer(threading.Thread):
-    def __init__(self, Queue):
+    def __init__(self, Queue, ID):
         threading.Thread.__init__(self)
         self.daemon = True
         self.running = True
         self.Q = Queue
+        self.ID = ID
         
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.HOST = "chgoyang.iptime.org"
-        self.HOST = "localhost"
+        #self.HOST = "localhost"
         self.PORT = 14101
-        self.sock.sendto(str( {"TYPE" : "first connect", "ID" : "id00124"} ).encode(), (self.HOST, self.PORT))
+        self.sock.sendto(str( {"TYPE" : "first connect", "ID" : self.ID} ).encode(), (self.HOST, self.PORT))
         return
 
     def run(self):
@@ -56,7 +57,7 @@ class P2PServer(threading.Thread):
                 pass
 
             
-            except Excpetion as e:
+            except Exception as e:
                 self.sock.sendto("first connect".encode(), (self.HOST, self.PORT))
                 print(e)                
         return
@@ -96,7 +97,7 @@ class EventServer(threading.Thread): # server
         return
 
 # 로컬 명령어를 Queue에서 받아와 수행하는 루틴
-class EventHandler(threading.Thread): # client
+class P2PEventHandler(threading.Thread): # client
     def __init__(self, Queue):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -110,7 +111,29 @@ class EventHandler(threading.Thread): # client
         print('log : queue server start')
         while self.running:
             try:
-                argv = Q.get()
+                argv = self.Q.get()
+                print()
+                print()
+                print()
+                print()
+                print("log : P2P server get Queue", argv)
+                print()
+                print()
+                print(type(argv))
+                print()
+                print()
+                continue
+
+
+
+
+
+
+
+
+
+
+
                 if not type(argv) == type(dict()):
                     continue
                 
@@ -140,8 +163,8 @@ if __name__ == '__main__':
         threads = []
         Q = queue.Queue()
 
-        threads.append(EventServer(Q))
-        threads.append(EventHandler(Q))
+        #threads.append(EventServer(Q))
+        threads.append(P2PEventHandler(Q))
         threads.append(P2PServer(Q))
         
 

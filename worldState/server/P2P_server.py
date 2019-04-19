@@ -69,6 +69,8 @@ def main(host='192.168.0.12', port=9999):
             sock.sendto(str(addresses[0]).encode(), addresses[1])
             addresses.pop(1)
             addresses.pop(0)
+    return
+       
             
 # 외부 접속용 ip 서버 - ipList 반환 전용
 class databaseServer(threading.Thread): # server
@@ -118,7 +120,7 @@ class EventHandler(threading.Thread): # client
         
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
         self.HOST = s.getsockname()[0]
-        self.HOST = 'localhost'
+        #self.HOST = 'localhost'
         self.PORT = 14101
 
         self.sock.bind((self.HOST, self.PORT))

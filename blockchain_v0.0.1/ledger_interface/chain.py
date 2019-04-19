@@ -24,11 +24,21 @@ class chain(PyJSON):
         self.setHash()
         return
 
+    
     def setHash(self):
         h = libhash()
-        h.update(str(self.to_dict()))
+        dic = self.to_dict()
+        dic['C_Hash'] = None
+        h.update(str(dic))
         self.C_Hash = h.getsha256()
-        return
+        return True
+
+    def getHash(self):
+        h = libhash()
+        dic = self.to_dict()
+        dic['B_Hash'] = None
+        h.update(str(dic))
+        return h.getsha256()
 
 
 if __name__ == "__main__":
@@ -49,8 +59,11 @@ if __name__ == "__main__":
     b.add(t)
     c.add(b)
     
-    print(c.to_dict())
+    for i in c.to_dict():
+        print(i, c.to_dict()[i])
     print()
-    print(b.to_dict())
+    for i in b.to_dict():
+        print(i, b.to_dict()[i])
     print()
-    print(t.to_dict())
+    for i in t.to_dict():
+        print(i, t.to_dict()[i])

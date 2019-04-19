@@ -15,20 +15,11 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 sys.path.append(os.path.dirname(__file__))
 
-from login_socket.client_login import login, logout
+from login_socket.client_login import login, logout # MSP에 통신하며 로그인하는 함수
+from core.makeLedger import * # 트랜잭션, 블록, 체인을 만드는 함수모음
+from core.fileToDict import fileToDict # 파일 이름으로 파일을 저장하고 불러오는 클래스
+from p2p_socket.server_p2p import P2PServer, P2PEventHandler  # 합의를 위한 P2P모듈
 
-# 파일을 읽어서 dict로 반환해주는 함수
-def fileread(argv):
-    if 'filename' in argv:
-        with open(argv['filename'], 'rb') as file:
-            filedata = file.read()
-            filesize = len(filedata)
-            return {
-                "filename" : argv['filename'],
-                "filedata" : filedata,
-                "filesize" : filesize
-                }
-    return False
 
 # 명령어를 받아들이는 소켓 서버 localhost
 class EventServer(threading.Thread): # server
@@ -67,6 +58,8 @@ class EventHandler(threading.Thread): # client
         self.running = True
         self.loginState = False
         self.Identity = None
+        self.P2P_Q = queue.Queue()
+        self.threads = []
 
         return 
 
@@ -77,8 +70,12 @@ class EventHandler(threading.Thread): # client
                 argv = Q_event.get()
                 print('log : queue server : ', type(argv), argv)
 
+
                 if 'TYPE' in argv:
                     print("log : type detect : ", argv['TYPE'])
+
+
+                    # 로그인
                     if argv['TYPE'] == 'login':
                         print("log : login start")
                         result = login(argv['ID'], argv['PW'])
@@ -86,7 +83,20 @@ class EventHandler(threading.Thread): # client
                         if result:
                             self.loginState = result
                             self.Identity = argv['ID']
+                            
+                            try:
+                                self.threads.append(P2PServer(self.P2P_Q, self.Identity))
+                                self.threads.append(P2PEventHandler(self.P2P_Q))
 
+                                for i in self.threads:
+                                    print('start', i)
+                                    i.start()
+                                print("log : P2P server running")
+                            except:
+                                pass
+
+
+                    # 로그아웃
                     if argv['TYPE'] == 'logout':
                         print("log : logout start")
                         result = logout(self.Identity)
@@ -95,10 +105,33 @@ class EventHandler(threading.Thread): # client
                             self.loginState = not result
                             self.Identity = None
 
+
+
+                    # 현재 상태 확인
                     if argv['TYPE'] == 'status':
                         print("----- Status -----")
                         print("로그인 상태 :", self.loginState)
                         print("로그인 유저 이름 :", self.Identity)
+                        
+
+
+                    # 트랜잭션 발생
+                    if argv['TYPE'] == 'event':
+                        if not "FILENAME" in argv:
+                            print("log : not in filename")
+                            continue
+                        elif self.Identity == None:
+                            print("log : needs login")
+                            continue
+                        f = fileToDict()
+                        fileDic = f.fileread(argv["FILENAME"])
+                        fileDic["Identity"] = self.Identity
+
+                        tx = maketx(fileDic)
+                        data = tx.to_dict() # 생성된 트랜잭션 데이터 (딕셔너리)
+                        self.P2P_Q.put(data) # 생성된 데이터를 별도 스레드로 넘겨 합의 알고리즘 수행
+
+                        pass
                 else:
                     continue
 
@@ -116,6 +149,10 @@ class EventHandler(threading.Thread): # client
             try: print("log : 강제 로그아웃 실행", logout(ID = self.Identity))
             except: pass
         self.running = False
+        
+        for i in self.threads:# 내부 p2p 서버 종료
+            i.stop()
+            print('stop', i)
 
 if __name__ == '__main__':
     try:

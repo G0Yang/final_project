@@ -11,7 +11,7 @@ class block(PyJSON):
     def __init__(self, *argv, **kwargv):
         self.header = blockheader().to_dict()
         self.body = []
-        self.B_hash = None
+        self.B_Hash = None
         
         self.size = len(str(self.to_dict()))
         return
@@ -21,20 +21,38 @@ class block(PyJSON):
         self.setHash()
         self.size = len(str(self.to_dict()))
         return True
-
+    
     def setHash(self):
         h = libhash()
-        h.update(str(self.to_dict()))
+        dic = self.to_dict()
+        dic['B_Hash'] = None
+        dic['size'] = None
+        h.update(str(dic))
         self.B_Hash = h.getsha256()
-        return
+        return True
+
+    def getHash(self):
+        h = libhash()
+        dic = self.to_dict()
+        dic['B_Hash'] = None
+        dic['size'] = None
+        h.update(str(dic))
+        return h.getsha256()
 
 
 if __name__ == "__main__":
+    t = transaction()
+
+    data = {}
+
+    data['TXID'] = "123"
+
+    t.update(data)
+
     b = block()
 
-    a = b.add(123)
+    b.add(t)
 
-    print(a)
 
     print(b.to_dict())
     print(type(b.header))

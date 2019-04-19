@@ -8,26 +8,14 @@ def argvDecoder(argv):
     if not type(argv) == type(list()):
         return False
     result = {}
+
     for i in argv[1:]:
-        if '-ID=' in i:
-            result['ID'] = i.split('-ID=')[1]
-        elif '-PW=' in i:
-            result['PW'] = i.split('-PW=')[1]
-        elif '-type=' in i:
-            result['TYPE'] = i.split('-type=')[1]
-        #elif '-filename=' in i:
-            #result['filename'] = i.split('-filename=')[1]
-            #result['filesize'] = len(open(result['filename'], 'rb').read())
-        
-            #with open(result['filename'], 'rb') as r:
-                #result['file'] = r.read()
-    
+        try: result[i.split("=")[0].split("-")[1].upper()] = i.split("=")[1]
+        except: pass
+
     if 'ID' in result and 'PW' in result:
         result['TYPE'] = 'login'
         return result
-
-    if len(result) == 0:
-        return False
 
     return result
 

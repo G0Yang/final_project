@@ -39,38 +39,72 @@ class transaction(PyJSON):
         return
 
     def update(self, data):
+        data.update(self.to_dict())
         self.from_dict(data)
         self.setHash()
         self.size = len(str(self.to_dict()))
+        self.setHash()
         return 
-
+    
     def setHash(self):
         h = libhash()
-        h.update(str(self.to_dict()))
+        dic = self.to_dict()
+        dic['T_Hash'] = None
+        dic['size'] = None
+        h.update(str(dic))
         self.T_Hash = h.getsha256()
-        return
+        return True
+
+    def getHash(self):
+        h = libhash()
+        dic = self.to_dict()
+        dic['T_Hash'] = None
+        dic['size'] = None
+        h.update(str(dic))
+        return h.getsha256()
 
 if __name__ == "__main__":
-    t = transaction()
+    t1 = time.time()
+    for i in range(0,10000):
+        t = transaction()
 
-    data = t.to_dict()
+        data = t.to_dict()
 
-    print(type(data))
-    print(data)
+        #print(type(data))
+        #print(data)
 
-    data['TXID'] = "123"
+        data['TXID'] = "123"
 
-    t.from_dict(data)
+        t.from_dict(data)
 
 
-    data = t.to_dict()
+        data = t.to_dict()
 
-    print(type(data))
-    print(data)
+        #print(type(data))
+        #print(data)
 
-    t.update(data)
+        t.update(data)
     
-    data = t.to_dict()
+        data = t.to_dict()
 
-    print(type(data))
-    print(data)
+        #print(type(data))
+        #print(data)
+    
+        t.getHash()
+        t.to_dict()
+    t2 = time.time()
+
+    print("total time :", t2-t1)
+
+    # 10000 benchmark
+    # no self.h
+    #1.2570581436157227
+    #1.252007246017456
+    #1.2400245666503906
+    # avg = 1.25
+
+    # with self.h
+    #1.2690420150756836
+    #1.2777152061462402
+    #1.2991104125976562
+    # avg = 1.28

@@ -11,7 +11,7 @@ import queue
 
 from server.WS_server import worldStateHandler, databaseServer, worldStateServer, P2PAgreementHandler
 
-from server.P2P_server import *
+from server.P2P_server import P2PServer, P2PHandler
 
 Q = queue.Queue()
 
@@ -25,6 +25,9 @@ def main(argv):
     
     threads = []
     
+    threads.append(P2PServer(Q))
+    threads.append(P2Phandler(Q))
+
     #threads.append(worldStateHandler(Q)) # 명령어 처리를 위한 Queue호출 및 순환 루틴
     #threads.append(databaseServer(Q)) # 외부 접속용 ip 서버
     #threads.append(worldStateServer(Q)) # 내부 접속용localhost 서버

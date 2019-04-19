@@ -18,7 +18,7 @@ sys.path.append(os.path.dirname(__file__))
 from login_socket.client_login import login, logout # MSP에 통신하며 로그인하는 함수
 from core.makeLedger import * # 트랜잭션, 블록, 체인을 만드는 함수모음
 from core.fileToDict import fileToDict # 파일 이름으로 파일을 저장하고 불러오는 클래스
-from p2p_socket.server_p2p import P2PServer, P2PEventHandler  # 합의를 위한 P2P모듈
+from p2p_socket.server_p2p import P2PServer, P2PHandler  # 합의를 위한 P2P모듈
 
 
 # 명령어를 받아들이는 소켓 서버 localhost
@@ -30,11 +30,13 @@ class EventServer(threading.Thread): # server
 
         self.HOST = 'localhost'
         self.PORT = 14010
+        self.bind = None
         return
 
     def run(self):
         while self.running:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                self.bind = s
                 print('log : server start', (self.HOST, self.PORT))
                 s.bind((self.HOST, self.PORT))
                 s.listen(0)
@@ -48,6 +50,7 @@ class EventServer(threading.Thread): # server
 
     def stop(self):
         self.running = False
+        self.bind.close()
         return
 
 # 로컬 명령어를 Queue에서 받아와 수행하는 루틴
@@ -86,7 +89,7 @@ class EventHandler(threading.Thread): # client
                             
                             try:
                                 self.threads.append(P2PServer(self.P2P_Q, self.Identity))
-                                self.threads.append(P2PEventHandler(self.P2P_Q))
+                                self.threads.append(P2PHandler(self.P2P_Q, self.Identity))
 
                                 for i in self.threads:
                                     print('start', i)
@@ -129,7 +132,7 @@ class EventHandler(threading.Thread): # client
 
                         tx = maketx(fileDic)
                         data = tx.to_dict() # 생성된 트랜잭션 데이터 (딕셔너리)
-                        self.P2P_Q.put(data) # 생성된 데이터를 별도 스레드로 넘겨 합의 알고리즘 수행
+                        self.P2P_Q.put((data, self.Identity, "localhost")) # 생성된 데이터를 별도 스레드로 넘겨 합의 알고리즘 수행
 
                         pass
                 else:
@@ -138,6 +141,7 @@ class EventHandler(threading.Thread): # client
 
                 
             except Exception as e:
+                print("class EventHandler Error")
                 print(e)
         return
 

@@ -6,7 +6,7 @@ import threading, time
 import sys, os
 import queue
 
-from server.MSP_server import memberShipHandler, databaseServer
+from server.MSP_server import memberShipHandler, memberShipServer
 
 Q = queue.Queue()
 
@@ -21,7 +21,7 @@ def main():
     threads = []
     
     threads.append(memberShipHandler(Q)) # 명령어 처리를 위한 Queue호출 및 순환 루틴
-    threads.append(databaseServer(Q)) # 외부 접속용 ip 서버
+    threads.append(memberShipServer(Q)) # 외부 접속용 ip 서버
 
     for i in threads:
         i.start()

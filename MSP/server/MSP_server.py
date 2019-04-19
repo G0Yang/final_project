@@ -86,6 +86,7 @@ class memberShipHandler(threading.Thread):
                 else:
                     conn.sendall("False".encode())
                 print("log : end!!!")
+                conn.close()
                 return True
 
             # 로그아웃 과정
@@ -94,9 +95,11 @@ class memberShipHandler(threading.Thread):
                 if logout(argv['ID']):
                     conn.sendall("True".encode())
                     print(True)
+                    conn.close()
                 else:
                     conn.sendall("False".encode())
                     print(False)
+                    conn.close()
 
             # 이벤트 과정
             if argv['type'] == "event":
@@ -114,7 +117,7 @@ class memberShipHandler(threading.Thread):
         self.running = False
 
 # 외부 접속용 ip 서버
-class databaseServer(threading.Thread): # server
+class memberShipServer(threading.Thread): # server
     def __init__(self, Q):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -155,7 +158,7 @@ if __name__ == '__main__':
         threads = []
         
         threads.append(memberShipHandler())
-        threads.append(databaseServer())
+        threads.append(memberShipServer())
 
         for i in threads:
             print('start', i)

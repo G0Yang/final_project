@@ -29,7 +29,7 @@ def makeOrderingList(hostNumder = 0):
     return orderingList
 
 # 전체 리스트에서 오더링할 ip리스트를 반환
-def orderingBindList(bindList):
+def orderingBindList(bindList, IP):
     if not type(bindList) == type(list()):
         try:
             print("list가 아님")
@@ -40,13 +40,15 @@ def orderingBindList(bindList):
     orderingList = []
     countList = makeOrderingList(len(bindList))
     for i in countList:
-        orderingList.append(bindList[i])
+        if not bindList[i][1][0] == IP:
+            orderingList.append(bindList[i])
 
     if not len(orderingList) == len(countList):
         return False
 
     return orderingList
 
+'''
 def main(host='192.168.0.12', port=9999):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
     
@@ -70,10 +72,10 @@ def main(host='192.168.0.12', port=9999):
             addresses.pop(1)
             addresses.pop(0)
     return
-       
+'''  
             
 # 외부 접속용 ip 서버 - ipList 반환 전용
-class databaseServer(threading.Thread): # server
+class P2PServer(threading.Thread): # server
     def __init__(self, Q):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -111,7 +113,7 @@ class databaseServer(threading.Thread): # server
 
 
 # P2P 서버
-class EventHandler(threading.Thread): # client
+class P2PHandler(threading.Thread): # client
     def __init__(self, Queue):
         threading.Thread.__init__(self)
         self.daemon = True
@@ -144,10 +146,14 @@ class EventHandler(threading.Thread): # client
                 if "TYPE" in data:
                     print("이벤트 처리", type(data['TYPE']), data['TYPE'])
                     if data['TYPE'] == 'first connect':
+                        print("log : ipList append")
                         self.appendAddr(data['ID'], addr)
                         print(self.ipList)
-                    if data['TYPE'] == "event":
-                        orderingList = orderingBindList(self.ipList)
+                    if data['TYPE'] == "giveIpList":
+                        print("log : return ipList")
+                        orderingList = orderingBindList(self.ipList, addr[0])
+                        # 수정 필요, 테스트 부분
+                        self.sock.sendto(str(self.ipList).encode(), addr)
                         pass
                 
             except Exception as e:
@@ -191,7 +197,7 @@ if __name__ == '__main__':
         Q = queue.Queue()
         print("start Thread")
         #threads.append(EventServer(Q))
-        threads.append(EventHandler(Q))
+        #threads.append(EventHandler(Q))
         #threads.append(P2PServer(Q))
         
 

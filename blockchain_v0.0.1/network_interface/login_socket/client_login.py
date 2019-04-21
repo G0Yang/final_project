@@ -70,8 +70,29 @@ def isOnline(ID = ''):
     return
 
 
-
 if __name__ == '__main__':  
+    print("login")
+    print("00124 :", login("id00124", "pw00124"))
+    print("00125 :", login("id00125", "pw00125"))
+    print("00126 :", login("id00126", "pw00126"))
+    print("00127 :", login("id00127", "pw00127"))
+    print("00128 :", login("id00128", "pw00128"))
+    print("00129 :", login("id00129", "pw00129"))
+    
+    print()
+    print()
+    print()
+    time.sleep(2)
+
+    print("logout")
+    print("00124 :", logout("id00124"))
+    print("00125 :", logout("id00125"))
+    print("00126 :", logout("id00126"))
+    print("00127 :", logout("id00127"))
+    print("00128 :", logout("id00128"))
+    print("00129 :", logout("id00129"))
+
+if __name__ == '__main__1':  
     try:
         type = input("1 : login\n2 : logout\n : ")
         ID = 'id00124'

@@ -85,7 +85,7 @@ class P2PServer(threading.Thread): # server
         
 
         self.HOST = s.getsockname()[0]
-        self.PORT = 9999
+        self.PORT = 14102
         return
 
     def run(self):
@@ -114,11 +114,11 @@ class P2PServer(threading.Thread): # server
 
 # P2P 서버
 class P2PHandler(threading.Thread): # client
-    def __init__(self, Queue):
+    def __init__(self, Q):
         threading.Thread.__init__(self)
         self.daemon = True
         self.running = True
-        self.Q = Queue
+        self.Q = Q
         
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
         self.HOST = s.getsockname()[0]

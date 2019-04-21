@@ -127,7 +127,7 @@ class memberShipServer(threading.Thread): # server
         
 
         self.HOST = s.getsockname()[0]
-        self.PORT = 14005
+        self.PORT = 14003
         return
 
     def run(self):

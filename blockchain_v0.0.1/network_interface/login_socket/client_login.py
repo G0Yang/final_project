@@ -13,7 +13,7 @@ from chaincode.smartContract import *
 
 HOST = "chgoyang.iptime.org"
 #HOST = "192.168.0.38"
-PORT = 14005
+PORT = 14003
 
 def login(ID = '', PW = ''):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:

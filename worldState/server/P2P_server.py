@@ -85,21 +85,23 @@ class P2PServer(threading.Thread): # server
 
         self.HOST = s.getsockname()[0]
         self.PORT = 14102
+
+        self.s =  socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
+        print('server start', (self.HOST, self.PORT))
+        self.s.bind((self.HOST, self.PORT))
+        self.s.listen(0)
         return
 
     def run(self):
         while self.running:
             try:
                 print('databaseServer')
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    print('server start', (self.HOST, self.PORT))
-                    s.bind((self.HOST, self.PORT))
-                    s.listen(0)
-                    conn, addr = s.accept()
-                    argv = conn.recv(1024*1024).decode()
-                    argv = ast.literal_eval(argv)
                 
-                    self.Q.put((str(self.HOST), conn, addr, argv))
+                conn, addr = self.s.accept()
+                argv = conn.recv(1024*1024).decode()
+                argv = ast.literal_eval(argv)
+                
+                self.Q.put((str(self.HOST), conn, addr, argv))
             except Exception as e:
                 print(e)
 

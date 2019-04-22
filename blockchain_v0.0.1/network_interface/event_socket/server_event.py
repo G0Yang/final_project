@@ -30,25 +30,25 @@ class EventServer(threading.Thread): # server
 
         self.HOST = 'localhost'
         self.PORT = 14010
-        self.bind = None
         self.count = 2
+
+        self.s =  socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        print('log : server start', (self.HOST, self.PORT))
+        self.s.bind((self.HOST, self.PORT))
+        self.s.listen(0)
+
         return
 
     def run(self):
         while not self.count == 0:
             try:
-                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                    self.bind = s
-                    print('log : server start', (self.HOST, self.PORT))
-                    s.bind((self.HOST, self.PORT))
-                    s.listen(0)
-                    conn, addr = s.accept()
-                    argv = conn.recv(1024*1024).decode()
-                    argv = ast.literal_eval(argv)
-                    print("log : 연결 정보 :", type(argv), argv)
+                conn, addr = self.s.accept()
+                argv = conn.recv(1024*1024).decode()
+                argv = ast.literal_eval(argv)
+                print("log : 연결 정보 :", type(argv), argv)
                 
 
-                    Q_event.put(argv)   
+                Q_event.put(argv)   
             except Exception as e:
                 print("error : class EventServer def run Exception")
                 print(e)
@@ -57,7 +57,6 @@ class EventServer(threading.Thread): # server
 
     def stop(self):
         self.running = False
-        self.bind.close()
         return
 
 # 로컬 명령어를 Queue에서 받아와 수행하는 루틴

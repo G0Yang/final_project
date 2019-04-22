@@ -18,7 +18,7 @@ PORT = 14003
 def login(ID = '', PW = ''):
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
         s.connect((HOST, PORT))
-        login = {
+        login = { 
             'type' : 'login',
             'ID' : ID,
             'PW' : PW

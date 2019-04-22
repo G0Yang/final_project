@@ -64,23 +64,21 @@ class P2PServer(threading.Thread):
                 argv = ast.literal_eval(argv.decode())
 
                 
-                print()
-                print()
-                print()
-                print()
-                print()
-                print()
 
+                if type(argv) == type(list()):
+                    for i, j in argv:
+                        print(i, j)
 
-                print(argv)
+                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "data" : self.ID} ).encode(), j)
+                        data, addr = self.sock_server.recvfrom(4096)
+                        data = data.decode()
+                        print(data)
 
-                
-                print()
-                print()
-                print()
-                print()
-                print()
-                print()
+        
+                        pass
+                else:            
+                    print(type(addr),addr)
+                    self.sock_server.sendto(str("잘 받111").encode(), addr)
 
 
                 #for i, j in argv:

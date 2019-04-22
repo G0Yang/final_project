@@ -88,12 +88,12 @@ if __name__ == '__main__':
     '''
 
     print("logout")
-    #print("00124 :", logout("id00124"))
+    print("00124 :", logout("id00124"))
     print("00125 :", logout("id00125"))
-    #print("00126 :", logout("id00126"))
-    #print("00127 :", logout("id00127"))
-    #print("00128 :", logout("id00128"))
-    #print("00129 :", logout("id00129"))
+    print("00126 :", logout("id00126"))
+    print("00127 :", logout("id00127"))
+    print("00128 :", logout("id00128"))
+    print("00129 :", logout("id00129"))
 
 if __name__ == '__main__1':  
     try:

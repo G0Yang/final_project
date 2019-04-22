@@ -122,7 +122,6 @@ class P2PHandler(threading.Thread): # client
         
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
         self.HOST = s.getsockname()[0]
-        #self.HOST = 'localhost'
         self.PORT = 14101
 
         self.sock.bind((self.HOST, self.PORT))
@@ -149,7 +148,7 @@ class P2PHandler(threading.Thread): # client
                         print("log : ipList append")
                         self.appendAddr(data['ID'], addr)
 
-                        self.sock.sendto(str(addr).encode(), addr)
+                        #self.sock.sendto(str(addr).encode(), addr)
 
                         print(self.ipList)
                         continue
@@ -203,8 +202,7 @@ if __name__ == '__main__':
 
         threads.append(P2PHandler(Q))
 
-        #threads.append(EventHandler(Q))
-        #threads.append(P2PServer(Q))
+        threads.append(P2PServer(Q))
         
 
         for i in threads:

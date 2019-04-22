@@ -47,16 +47,16 @@ class P2PServer(threading.Thread):
         self.ID = ID
         
         self.sock_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #self.HOST = "chgoyang.iptime.org"
+        self.HOST = "chgoyang.iptime.org"
         self.HOST = "192.168.0.38"
         self.PORT = 14101
         self.sock_server.sendto(str( {"TYPE" : "first connect", "ID" : self.ID} ).encode(), (self.HOST, self.PORT))
-
+        '''
         data, addr = self.sock_server.recvfrom(1024)
         addr = ast.literal_eval(data.decode())
         self.sock_p2p = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock_p2p.bind(addr)
-
+        '''
         return
 
     def run(self):
@@ -127,8 +127,8 @@ class sendAgree(threading.Thread):
         try:
             
             sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            #HOST = "chgoyang.iptime.org"
-            HOST = "192.168.0.38"
+            HOST = "chgoyang.iptime.org"
+            #HOST = "192.168.0.38"
             PORT = 14101
             sock.sendto(str( {"TYPE" : "giveIpList", "ID" : self.ID} ).encode(), (HOST, PORT))
 

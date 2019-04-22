@@ -62,13 +62,15 @@ class P2PServer(threading.Thread):
                 print('log : P2P server start', (self.HOST, self.PORT))
 
                 argv, addr = self.sock_server.recvfrom(4096)
-
-                print("log : P2PServer recv", argv, addr)
-
-                #argv = ast.literal_evel(argv)
+                
+                argv = ast.literal_eval(argv.decode())
 
                 print(argv)
 
+                for i, j in argv:
+                    print(i, j)
+                    self.sock_server.sendto(str( {"TYPE" : "sendAgree", "ID" : self.ID} ).encode(), j)
+                    pass
 
 
                 #self.Q.put((argv, addr, self.sock_server))
@@ -112,6 +114,8 @@ class P2PHandler(threading.Thread): # client
                     #sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
                     self.sock_server.sendto(str( {"TYPE" : "giveIpList", "ID" : self.ID} ).encode(), ("chgoyang.iptime.org", 14101))
 
+
+                    '''
                     data, addr = self.sock_server.recvfrom(4096)
                     ipList = ast.literal_eval(data.decode())
 
@@ -119,7 +123,7 @@ class P2PHandler(threading.Thread): # client
                         print(i, j)
                         self.sock_server.sendto(str( {"TYPE" : "sendAgree", "ID" : self.ID} ).encode(), j)
                         pass
-
+                    '''
 
 
             except Exception as e:

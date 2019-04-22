@@ -147,9 +147,6 @@ class P2PHandler(threading.Thread): # client
                     if data['TYPE'] == 'first connect':
                         print("log : ipList append")
                         self.appendAddr(data['ID'], addr)
-
-                        #self.sock.sendto(str(addr).encode(), addr)
-
                         print(self.ipList)
                         continue
 
@@ -230,9 +227,3 @@ if __name__ == '__main__':
             i.stop()
     print('feild end')
         
-
-    '''
-    print(random.randint(1,1000))
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-    main(sys.argv)
-    '''

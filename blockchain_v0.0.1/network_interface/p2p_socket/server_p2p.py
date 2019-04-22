@@ -51,12 +51,6 @@ class P2PServer(threading.Thread):
         #self.HOST = "192.168.0.38"
         self.PORT = 14101
         self.sock_server.sendto(str( {"TYPE" : "first connect", "ID" : self.ID} ).encode(), (self.HOST, self.PORT))
-        '''
-        data, addr = self.sock_server.recvfrom(1024)
-        addr = ast.literal_eval(data.decode())
-        self.sock_p2p = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock_p2p.bind(addr)
-        '''
         return
 
     def run(self):
@@ -84,7 +78,61 @@ class P2PServer(threading.Thread):
         self.running = False
         return
 
+# 로컬 명령어를 Queue에서 받아와 수행하는 루틴
+class P2PHandler(threading.Thread): # client
+    def __init__(self, Queue, ID):
+        threading.Thread.__init__(self)
+        self.daemon = True
+        self.running = True
+        self.Q = Queue
+        self.status = False
+        self.ID = ID
+        
+        return 
 
+    def run(self):
+        while self.running:
+            try:
+                print('log : queue server start')
+                argv, addr, sock = self.Q.get()
+                
+                # addr == self.ID 이면 합의 요청
+                # else 합의 요청 반환
+
+                if addr == self.ID:
+                    print("합의 요청, ipList 받아오기")
+                    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    sock.sendto("giveIpList".encode(), ("chgoyang.iptime.org", 14101))
+
+                    data, addr = sock.recvfrom(4096)
+                    data = ast.literal_eval(data.decode())
+                    for i in data:
+                        print(i)
+                else:
+                    print("합의 요청 반환")
+
+
+            except Exception as e:
+                print(e)
+        return
+
+    def stop(self):
+        print("log : P2PHandler end")
+        self.running = False
+        
+def P2P(argv, addr, sock):
+
+    while True:
+        data, addr = sock.recvfrom(1024)
+        print('서버에게 받음 : {} {}'.format(addr, data))
+        addr = ast.literal_eval(data.decode())
+        if type(addr) == type(list()):
+            for i in addr:
+                print(type(i), i)
+                sock.sendto(b'111111111111', i)
+
+        else:
+            print(type(addr),addr)
 # 명령어를 받아들이는 소켓 서버 localhost
 class EventServer(threading.Thread): # server
     def __init__(self, Queue):
@@ -200,44 +248,6 @@ class recvAgree(threading.Thread):
         print("log : sendAgree end")
         self.running = False
 
-
-# 로컬 명령어를 Queue에서 받아와 수행하는 루틴
-class P2PHandler(threading.Thread): # client
-    def __init__(self, Queue, ID):
-        threading.Thread.__init__(self)
-        self.daemon = True
-        self.running = True
-        self.Q = Queue
-        self.status = False
-        self.ID = ID
-        
-        return 
-
-    def run(self):
-        while self.running:
-            try:
-                print('log : queue server start')
-                argv, addr, sock = self.Q.get()
-                
-                # addr == self.ID 이면 합의 요청
-                # else 합의 요청 반환
-                if addr == self.ID:
-                    print("합의 요청")
-                    send = sendAgree(self.ID)
-                    send.start(argv)
-                else:
-                    print("합의 요청 반환")
-                    recv = recvAgree()
-                    recv.start(argv, sock)
-
-
-            except Exception as e:
-                print(e)
-        return
-
-    def stop(self):
-        print("log : P2PHandler end")
-        self.running = False
 
 if __name__ == '__main__':
     try:

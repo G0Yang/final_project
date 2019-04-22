@@ -62,6 +62,7 @@ class P2PServer(threading.Thread):
                 argv, addr = self.sock_server.recvfrom(4096)
                 
                 argv = ast.literal_eval(argv.decode())
+                print(argv)
 
                 
 

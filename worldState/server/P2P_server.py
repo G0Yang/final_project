@@ -9,25 +9,6 @@ addresses = []
 s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 s.connect(("8.8.8.8", 80))
 
-# 오더링을 수행할 ip 갯수를 랜덤으로 추출하여 순번을 정해서 리스트로 반환
-def makeOrderingList(hostNumder = 0):
-    if not type(hostNumder) == type(int()):
-        try:
-            print("int가 아님")
-            hostNumder = int(hostNumder)
-        except:
-            print("int 변환 실패")
-            return False
-    if hostNumder > 20:
-        hostNumder = 20
-    orderingList = []
-    while len(orderingList) < (hostNumder-1)/2:
-        num = random.randint(0, hostNumder)
-        if num not in orderingList:
-            orderingList.append(num)
-    orderingList.sort()
-    return orderingList
-
 # 전체 리스트에서 오더링할 ip리스트를 반환
 def orderingBindList(bindList, ID):
     if not type(bindList) == type(list()):
@@ -37,17 +18,34 @@ def orderingBindList(bindList, ID):
         except:
             print("list 변환 실패")
             return False
+
     orderingList = []
-    countList = makeOrderingList(len(bindList))
-    for i in countList:
-        if not bindList[i][0] == ID:
-            print(bindList[i], "추가")
+    num = 0
+
+    if (len(bindList)-1)/2 > 20:
+        num = 20
+    else:
+        num = (len(bindList)-1)/2
+
+    while not len(orderingList) == num:
+        i = random.randint(0, len(bindList)-1)
+        if not bindList[i] in orderingList and not bindList[i][0] == ID:
             orderingList.append(bindList[i])
 
-    if not len(orderingList) == len(countList):
-        return False
-
     return orderingList
+
+'''
+l = [
+    ("id00124", ("192.168.0.4", 4444)),
+    ("id00125", ("192.168.0.5", 5555)),
+    ("id00126", ("192.168.0.6", 6666)),
+    ("id00127", ("192.168.0.7", 7777)),
+    ("id00128", ("192.168.08.", 8888)),
+    ]
+
+print(orderingBindList(l, "id00125"))
+'''
+
 
 '''
 def main(host='192.168.0.12', port=9999):
@@ -191,7 +189,7 @@ class P2PHandler(threading.Thread): # client
 
 
 
-if __name__ == '__main__':
+if __name__ == '__main_1_':
     try:
         threads = []
         Q = queue.Queue()

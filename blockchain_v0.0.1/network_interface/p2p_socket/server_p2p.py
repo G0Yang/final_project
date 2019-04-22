@@ -64,13 +64,16 @@ class P2PServer(threading.Thread):
 
                 argv = ast.literal_evel(argv)
 
-                self.Q.put((argv, addr, self.sock_server))
+                print(argv)
+
+
+
+                #self.Q.put((argv, addr, self.sock_server))
                 pass
 
             
             except Exception as e:
                 print("class P2PServer def run")
-                self.sock_server.sendto("first connect".encode(), (self.HOST, self.PORT))
                 print(e)                
         return
 
@@ -102,14 +105,15 @@ class P2PHandler(threading.Thread): # client
                 if addr == self.ID:
                     print("합의 요청, ipList 받아오기")
                     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    sock.sendto("giveIpList".encode(), ("chgoyang.iptime.org", 14101))
+                    sock.sendto(str( {"TYPE" : "giveIpList", "ID" : self.ID} ).encode(), ("chgoyang.iptime.org", 14101))
 
                     data, addr = sock.recvfrom(4096)
-                    data = ast.literal_eval(data.decode())
-                    for i in data:
-                        print(i)
-                else:
-                    print("합의 요청 반환")
+                    ipList = ast.literal_eval(data.decode())
+
+                    for i, j in ipList:
+                        sock.sendto(str( {"TYPE" : "sendAgree", "ID" : self.ID} ).encode(), j)
+                        pass
+
 
 
             except Exception as e:

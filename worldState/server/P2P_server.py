@@ -29,7 +29,7 @@ def makeOrderingList(hostNumder = 0):
     return orderingList
 
 # 전체 리스트에서 오더링할 ip리스트를 반환
-def orderingBindList(bindList, IP):
+def orderingBindList(bindList, ID):
     if not type(bindList) == type(list()):
         try:
             print("list가 아님")
@@ -40,7 +40,8 @@ def orderingBindList(bindList, IP):
     orderingList = []
     countList = makeOrderingList(len(bindList))
     for i in countList:
-        if not bindList[i][1][0] == IP:
+        if not bindList[i][0] == ID:
+            print(bindList[i], "추가")
             orderingList.append(bindList[i])
 
     if not len(orderingList) == len(countList):
@@ -137,8 +138,8 @@ class P2PHandler(threading.Thread): # client
         while self.running:
             try:
                 data, addr = self.sock.recvfrom(1024)
-                data = data.decode()
-                data = ast.literal_eval(data)
+                data = ast.literal_eval(data.decode())
+                
                 print("받은 데이터 :", type(data), data)
                 print("받은 연결 :", type(addr), addr)
 
@@ -157,7 +158,6 @@ class P2PHandler(threading.Thread): # client
                         continue
                 
             except Exception as e:
-                self.sock.bind((self.HOST, self.PORT))
                 print(e)
         return
 

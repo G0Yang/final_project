@@ -51,6 +51,9 @@ class P2PServer(threading.Thread):
         #self.HOST = "192.168.0.38"
         self.PORT = 14101
         self.sock_server.sendto(str( {"TYPE" : "first connect", "ID" : self.ID} ).encode(), (self.HOST, self.PORT))
+
+        self.Q.put(self.sock_server)
+        print("server :", self.sock_server)
         return
 
     def run(self):
@@ -62,7 +65,7 @@ class P2PServer(threading.Thread):
 
                 print("log : P2PServer recv", argv, addr)
 
-                argv = ast.literal_evel(argv)
+                #argv = ast.literal_evel(argv)
 
                 print(argv)
 
@@ -90,7 +93,9 @@ class P2PHandler(threading.Thread): # client
         self.Q = Queue
         self.status = False
         self.ID = ID
+        self.sock_server = self.Q.get()
         
+        print("Handler :", self.sock_server)
         return 
 
     def run(self):
@@ -104,14 +109,15 @@ class P2PHandler(threading.Thread): # client
 
                 if addr == self.ID:
                     print("합의 요청, ipList 받아오기")
-                    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    sock.sendto(str( {"TYPE" : "giveIpList", "ID" : self.ID} ).encode(), ("chgoyang.iptime.org", 14101))
+                    #sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                    self.sock_server.sendto(str( {"TYPE" : "giveIpList", "ID" : self.ID} ).encode(), ("chgoyang.iptime.org", 14101))
 
-                    data, addr = sock.recvfrom(4096)
+                    data, addr = self.sock_server.recvfrom(4096)
                     ipList = ast.literal_eval(data.decode())
 
                     for i, j in ipList:
-                        sock.sendto(str( {"TYPE" : "sendAgree", "ID" : self.ID} ).encode(), j)
+                        print(i, j)
+                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "ID" : self.ID} ).encode(), j)
                         pass
 
 

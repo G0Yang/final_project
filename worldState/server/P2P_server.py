@@ -132,8 +132,8 @@ class P2PHandler(threading.Thread): # client
         return 
 
     def run(self):
-        print('log : queue server start')
         while self.running:
+            print('log : queue server start')
             try:
                 data, addr = self.sock.recvfrom(1024)
                 data = ast.literal_eval(data.decode())
@@ -153,6 +153,7 @@ class P2PHandler(threading.Thread): # client
                         print("log : return ipList")
                         orderingList = orderingBindList(self.ipList, data['ID'])
                         self.sock.sendto(str(orderingList).encode(), addr)
+                        print("orderingList 보내기 완료 :", orderingList)
                         continue
                 
             except Exception as e:

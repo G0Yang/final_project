@@ -48,12 +48,10 @@ class P2PServer(threading.Thread):
         
         self.sock_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.HOST = "chgoyang.iptime.org"
-        #self.HOST = "192.168.0.38"
         self.PORT = 14101
         self.sock_server.sendto(str( {"TYPE" : "first connect", "ID" : self.ID} ).encode(), (self.HOST, self.PORT))
 
         self.Q.put(self.sock_server)
-        print("server :", self.sock_server)
         return
 
     def run(self):
@@ -65,12 +63,30 @@ class P2PServer(threading.Thread):
                 
                 argv = ast.literal_eval(argv.decode())
 
+                
+                print()
+                print()
+                print()
+                print()
+                print()
+                print()
+
+
                 print(argv)
 
-                for i, j in argv:
-                    print(i, j)
-                    self.sock_server.sendto(str( {"TYPE" : "sendAgree", "ID" : self.ID} ).encode(), j)
-                    pass
+                
+                print()
+                print()
+                print()
+                print()
+                print()
+                print()
+
+
+                #for i, j in argv:
+                    #print(i, j)
+                    #self.sock_server.sendto(str( {"TYPE" : "sendAgree", "ID" : self.ID} ).encode(), j)
+                    #pass
 
 
                 #self.Q.put((argv, addr, self.sock_server))

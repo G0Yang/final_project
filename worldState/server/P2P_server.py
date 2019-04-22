@@ -100,7 +100,7 @@ class P2PServer(threading.Thread): # server
                     argv = conn.recv(1024*1024).decode()
                     argv = ast.literal_eval(argv)
                 
-                    self.Q.put([str(self.HOST), conn, addr, argv])
+                    self.Q.put((str(self.HOST), conn, addr, argv))
             except Exception as e:
                 print(e)
 
@@ -148,13 +148,17 @@ class P2PHandler(threading.Thread): # client
                     if data['TYPE'] == 'first connect':
                         print("log : ipList append")
                         self.appendAddr(data['ID'], addr)
+
+                        self.sock.sendto(str(addr).encode(), addr)
+
                         print(self.ipList)
+                        continue
+
                     if data['TYPE'] == "giveIpList":
                         print("log : return ipList")
-                        orderingList = orderingBindList(self.ipList, addr[0])
-                        # 수정 필요, 테스트 부분
-                        self.sock.sendto(str(self.ipList).encode(), addr)
-                        pass
+                        orderingList = orderingBindList(self.ipList, data['ID'])
+                        self.sock.sendto(str(orderingList).encode(), addr)
+                        continue
                 
             except Exception as e:
                 self.sock.bind((self.HOST, self.PORT))
@@ -196,7 +200,9 @@ if __name__ == '__main__':
         threads = []
         Q = queue.Queue()
         print("start Thread")
-        #threads.append(EventServer(Q))
+
+        threads.append(P2PHandler(Q))
+
         #threads.append(EventHandler(Q))
         #threads.append(P2PServer(Q))
         

@@ -71,6 +71,8 @@ def isOnline(ID = ''):
 
 
 if __name__ == '__main__':  
+
+    '''
     print("login")
     print("00124 :", login("id00124", "pw00124"))
     print("00125 :", login("id00125", "pw00125"))
@@ -83,6 +85,7 @@ if __name__ == '__main__':
     print()
     print()
     time.sleep(2)
+    '''
 
     print("logout")
     print("00124 :", logout("id00124"))

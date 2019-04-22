@@ -3,15 +3,15 @@
     "",
     "\\blockchain_v0.0.1",
     "\\blockchain_v0.0.1\\chaincode",
-    "\\blockchain_v0.0.1\\chaincode\\ledger",
-    "\\blockchain_v0.0.1\\core",
-    "\\blockchain_v0.0.1\\ledger_interface",
     "\\blockchain_v0.0.1\\network_interface",
     "\\blockchain_v0.0.1\\network_interface\\event_socket",
     "\\blockchain_v0.0.1\\network_interface\\login_socket",
+    "\\blockchain_v0.0.1\\network_interface\\p2p_socket",
+    "\\MSP",
+    "\\MSP\\server",
     "\\worldState",
     "\\worldState\\server"
   ],
-  "SelectedNode": "\\blockchain_v0.0.1\\network_interface\\p2p_socket\\server_p2p.py",
+  "SelectedNode": "\\blockchain_v0.0.1\\network_interface\\p2p_socket\\server_p2p (2).py",
   "PreviewInSolutionExplorer": false
 }

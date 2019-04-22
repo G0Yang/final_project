@@ -83,6 +83,8 @@ class EventHandler(threading.Thread): # client
                         print("log : login start")
                         result = login(argv['ID'], argv['PW'])
                         print("log : login result :", result, type(result))
+                        
+                        # 로그인 성공 시 수행함
                         if result:
                             self.loginState = result
                             self.Identity = argv['ID']
@@ -104,9 +106,15 @@ class EventHandler(threading.Thread): # client
                         print("log : logout start")
                         result = logout(self.Identity)
                         print("log : logout result :", result, type(result))
+
+                        # 로그아웃 실패시 수행
                         if result:
                             self.loginState = not result
                             self.Identity = None
+                            
+                            for i in self.threads:
+                                print("stop", i)
+                                i.stop()
 
 
 
@@ -132,7 +140,7 @@ class EventHandler(threading.Thread): # client
 
                         tx = maketx(fileDic)
                         data = tx.to_dict() # 생성된 트랜잭션 데이터 (딕셔너리)
-                        self.P2P_Q.put((data, self.Identity, "localhost")) # 생성된 데이터를 별도 스레드로 넘겨 합의 알고리즘 수행
+                        self.P2P_Q.put((data, self.Identity, None)) # 생성된 데이터를 별도 스레드로 넘겨 합의 알고리즘 수행
 
                         pass
                 else:

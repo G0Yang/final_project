@@ -48,7 +48,7 @@ class P2PServer(threading.Thread):
         
         self.sock_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.HOST = "chgoyang.iptime.org"
-        self.HOST = "192.168.0.38"
+        #self.HOST = "192.168.0.38"
         self.PORT = 14101
         self.sock_server.sendto(str( {"TYPE" : "first connect", "ID" : self.ID} ).encode(), (self.HOST, self.PORT))
         '''

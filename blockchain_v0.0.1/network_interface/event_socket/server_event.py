@@ -42,19 +42,20 @@ class EventServer(threading.Thread): # server
                     conn, addr = s.accept()
                     argv = conn.recv(1024*1024).decode()
                     argv = ast.literal_eval(argv)
-                    print("log : 연결 정보 :", type(argv), argv)
+                    print("log : 연결 정보 :",  type(argv), argv)
                 
                     s.close()
+                    conn.close()
 
                     Q_event.put(argv)   
             except Exception as e:
                 print("error : class EventServer def run Exception")
+                s.close()
                 print(e)
         return
 
     def stop(self):
         self.running = False
-        self.bind.close()
         return
 
 # 로컬 명령어를 Queue에서 받아와 수행하는 루틴

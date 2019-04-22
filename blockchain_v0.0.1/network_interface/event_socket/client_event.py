@@ -28,12 +28,9 @@ def eventHandler(argv): # client
         print(argv)
         if len(str(argv)) == 2:
             s.sendall("".encode())
-        #if 'filename' in argv:
-            #s.sendall(str(argv).encode())
-            #with open(argv['filename'], 'rb') as filedata:
-                #s.sendall(filedata.read())
-        s.sendall(str(argv).encode())
-
+        else:
+            s.sendall(str(argv).encode())
+        s.close()
     return
 
 if __name__ == '__main__':

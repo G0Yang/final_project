@@ -45,7 +45,8 @@ class EventServer(threading.Thread): # server
                 argv = ast.literal_eval(argv)
                 print("log : 연결 정보 :", type(argv), argv)
                 
-                Q_event.put(argv)                
+                Q_event.put(argv)   
+                s.close()
         return
 
     def stop(self):

@@ -34,18 +34,22 @@ class EventServer(threading.Thread): # server
 
     def run(self):
         while self.running:
-            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                print('log : server start', (self.HOST, self.PORT))
-                s.bind((self.HOST, self.PORT))
-                s.listen(0)
-                conn, addr = s.accept()
-                argv = conn.recv(1024*1024).decode()
-                argv = ast.literal_eval(argv)
-                print("log : 연결 정보 :", type(argv), argv)
+            try:
+                with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                    print('log : server start', (self.HOST, self.PORT))
+                    s.bind((self.HOST, self.PORT))
+                    s.listen(0)
+                    conn, addr = s.accept()
+                    argv = conn.recv(1024*1024).decode()
+                    argv = ast.literal_eval(argv)
+                    print("log : 연결 정보 :", type(argv), argv)
                 
-                s.close()
+                    s.close()
 
-                Q_event.put(argv)   
+                    Q_event.put(argv)   
+            except Exception as e:
+                print("error : class EventServer def run Exception")
+                print(e)
         return
 
     def stop(self):

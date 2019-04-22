@@ -30,13 +30,11 @@ class EventServer(threading.Thread): # server
 
         self.HOST = 'localhost'
         self.PORT = 14010
-        self.bind = None
         return
 
     def run(self):
         while self.running:
             with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-                self.bind = s
                 print('log : server start', (self.HOST, self.PORT))
                 s.bind((self.HOST, self.PORT))
                 s.listen(0)
@@ -45,8 +43,9 @@ class EventServer(threading.Thread): # server
                 argv = ast.literal_eval(argv)
                 print("log : 연결 정보 :", type(argv), argv)
                 
-                Q_event.put(argv)   
                 s.close()
+
+                Q_event.put(argv)   
         return
 
     def stop(self):

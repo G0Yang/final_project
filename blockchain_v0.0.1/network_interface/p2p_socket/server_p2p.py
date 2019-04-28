@@ -60,7 +60,7 @@ class P2PServer(threading.Thread):
                     for i, j in argv:
                         print(i, j)
 
-                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "data" : self.ID, "TX" : tx,  "Hash" : tmp_Hash} ).encode(), j)
+                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "data" : self.ID, "TX" : tmp_tx.to_dict(),  "Hash" : tmp_Hash} ).encode(), j)
                         data, addr = self.sock_server.recvfrom(1024*1024)
                         data = data.decode()
                         print(data)
@@ -77,7 +77,8 @@ class P2PServer(threading.Thread):
                     tx = maketx(argv["TX"])
                     txdata = tx.to_dict()
                     txHash = tx.getHash()
-
+                    
+                    print("str len :", str(len(argv["TX"])), str(len(txdata)))
                     print("len :", len(argv["TX"]), len(txdata))
                     print("Hash :", dataHash, txHash)
 

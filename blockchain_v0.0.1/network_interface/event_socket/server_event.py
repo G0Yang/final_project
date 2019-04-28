@@ -124,6 +124,8 @@ class EventHandler(threading.Thread): # client
                                 
                     if argv['TYPE'] == 'exit':
                         print("프로그램을 종료합니다!!!")
+                        self.stop()
+                        sys.exit(1)
                         raise KeyboardInterrupt
 
 
@@ -182,9 +184,8 @@ class EventHandler(threading.Thread): # client
             print('stop', i)
 
 if __name__ == '__main__':
+    threads = []
     try:
-        threads = []
-
         threads.append(EventServer())
         threads.append(EventHandler())
 
@@ -198,4 +199,7 @@ if __name__ == '__main__':
         for i in threads:
             i.stop()
             print('stop', i)
-
+    else:
+        for i in threads:
+            i.stop()
+            print('stop', i)

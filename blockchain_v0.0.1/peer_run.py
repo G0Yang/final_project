@@ -41,21 +41,14 @@ def chain_init(contractList = []):
 
     return contract_list
 
-def main(argv):
-    threads = []
-    
-    threads.append(EventServer())
-    threads.append(EventHandler())
-
-    for i in threads:
-        i.start()
-
-    return threads
-
 if __name__ == "__main__":
     threads = []
     try:
-        threads = main(sys.argv)
+        threads.append(EventServer())
+        threads.append(EventHandler())
+
+        for i in threads:
+            i.start()
         while True:
             time.sleep(10)
     except Exception as e:

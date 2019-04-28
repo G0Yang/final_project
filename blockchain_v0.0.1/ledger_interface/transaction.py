@@ -32,16 +32,12 @@ class transaction(PyJSON):
     def update(self, data):
         data.update(self.to_dict())
         self.from_dict(data)
-        self.setHash()
-        self.size = len(str(self.to_dict()))
-        self.setHash()
         return 
     
 
     def getHash(self):
         h = libhash()
-        dic = self.to_dict()
-        h.update(str(dic))
+        h.update(str(self.to_dict()))
         return h.getsha256()
 
 if __name__ == "__main__":

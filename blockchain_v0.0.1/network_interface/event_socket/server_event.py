@@ -123,8 +123,8 @@ class EventHandler(threading.Thread): # client
                                 i.stop()
                                 
                     if argv['TYPE'] == 'exit':
-
-                        sys.exit()
+                        print("프로그램을 종료합니다!!!")
+                        raise KeyboardInterrupt
 
 
                     # 현재 상태 확인

@@ -76,13 +76,10 @@ class P2PServer(threading.Thread):
                     dataHash = argv['Hash']
                     tx = maketx(argv["TX"])
                     txdata = tx.to_dict()
-                    txHash = tx.getHash()
-                    
-                    print("str len :", str(len(argv["TX"])), str(len(txdata)))
-                    print("len :", len(argv["TX"]), len(txdata))
-                    print("Hash :", dataHash, txHash)
 
-                    result = dataHash == txHash
+                    aa = str(len(argv["TX"])) == str(len(txdata))
+                    bb = len(argv["TX"]) == len(txdata)
+                    result = aa and bb
                     print("Match :", result)
 
                     self.sock_server.sendto(str(result).encode(), addr)

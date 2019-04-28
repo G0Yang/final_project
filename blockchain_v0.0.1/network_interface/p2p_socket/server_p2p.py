@@ -68,9 +68,9 @@ class P2PServer(threading.Thread):
                 else:            
                     print("합의 요청 받음")
                     print(type(addr),addr)
-                    #print(type(argv), argv)
-                    dataHash = argv['T_Hash']
-                    tx = maketx(argv)
+                    print(type(argv))
+                    dataHash = argv['TX']['T_Hash']
+                    tx = maketx(argv['TX'])
                     txHash = tx.getHash()
 
 

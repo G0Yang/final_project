@@ -20,24 +20,19 @@ Q = queue.Queue()
 # 큐는 내부 명령과 외부에서 오는 명령을 하나의 처리 프로세스로 뭉치게 만들어 DB에 접근하는 순서를 꼬이지 않도록 한다.
 
 
-def main():
-    print("WS_run.py")
-    threads = []
-    
-    threads.append(P2PServer(Q)) # 명령어 처리를 위한 Queue호출 및 순환 루틴
-    threads.append(P2PHandler(Q)) # 외부 접속용 ip 서버
-
-    for i in threads:
-        i.start()
-
-
-    print("main end")
-
-    return threads
-
 if __name__ == "__main__":
     try:
-        threads = main()
+        print("WS_run.py")
+        threads = []
+    
+        threads.append(P2PServer(Q)) # 명령어 처리를 위한 Queue호출 및 순환 루틴
+        threads.append(P2PHandler(Q)) # 외부 접속용 ip 서버
+
+        for i in threads:
+            i.start()
+
+
+        print("main end")
         while True:
             time.sleep(10)
     except Exception as e:

@@ -16,42 +16,37 @@ Q = queue.Queue()
 
 
 
-def main():
-    print("MSP_run.py")
-    threads = []
-    
-    threads.append(memberShipHandler(Q)) # 명령어 처리를 위한 Queue호출 및 순환 루틴
-    threads.append(memberShipServer(Q)) # 외부 접속용 ip 서버
-
-    for i in threads:
-        i.start()
-
-
-    print("main end")
-
-    return threads
-
 if __name__ == "__main__":
     try:
-        thread = main()
+        print("MSP_run.py")
+        threads = []
+    
+        threads.append(memberShipHandler(Q)) # 명령어 처리를 위한 Queue호출 및 순환 루틴
+        threads.append(memberShipServer(Q)) # 외부 접속용 ip 서버
+
+        for i in threads:
+            i.start()
+
+
+        print("main end")
         while True:
             time.sleep(10)
     except Exception as e:
         print('Exception', e)
-        for i in thread:
+        for i in threads:
             i.stop()
         print(e)
     except KeyboardInterrupt:
         print('Keyboard Interrupt')
-        for i in thread:
+        for i in threads:
             i.stop()
     except :
         print('Any Interrupt')
-        for i in thread:
+        for i in threads:
             i.stop()
     else:
         print('else')
-        for i in thread:
+        for i in threads:
             i.stop()
     print('feild end')
         

@@ -68,10 +68,18 @@ class P2PServer(threading.Thread):
                 else:            
                     print("합의 요청 받음")
                     print(type(addr),addr)
-                    print(type(argv), argv)
+                    #print(type(argv), argv)
+                    dataHash = argv['T_Hash']
                     tx = maketx(argv)
+                    txHash = tx.getHash()
 
-                    self.sock_server.sendto(str("잘 받111").encode(), addr)
+
+                    print(dataHash)
+                    print(txHash)
+                    result = dataHash == txHash
+                    print(result)
+
+                    self.sock_server.sendto(str("잘 받111" + result).encode(), addr)
 
 
                 pass

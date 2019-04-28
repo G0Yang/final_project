@@ -54,10 +54,13 @@ class P2PServer(threading.Thread):
                     tx = TX_Q.get()
                     print("합의 요청 보냄",  tx)
                     agreeList = []
+                    tmp_tx = maketx(tx)
+                    tmp_Hash = tmp_tx.getHash()
+
                     for i, j in argv:
                         print(i, j)
 
-                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "data" : self.ID, "TX" : tx} ).encode(), j)
+                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "data" : self.ID, "TX" : tx,  "Hash" : tmp_Hash} ).encode(), j)
                         data, addr = self.sock_server.recvfrom(1024*1024)
                         data = data.decode()
                         print(data)
@@ -70,17 +73,16 @@ class P2PServer(threading.Thread):
                     print(type(addr),addr)
                     print("argv :", type(argv))
 
-                    data = argv["TX"]
-                    dataHash = data['T_Hash']
-
-                    tx = maketx(data)
+                    dataHash = argv['Hash']
+                    tx = maketx(argv["TX"])
+                    txdata = tx.to_dict()
                     txHash = tx.getHash()
 
+                    print("len :", len(argv["TX"]), len(txdata))
+                    print("Hash :", dataHash, txHash)
 
-                    print(dataHash)
-                    print(txHash)
                     result = dataHash == txHash
-                    print(result)
+                    print("Match :", result)
 
                     self.sock_server.sendto(str(result).encode(), addr)
 

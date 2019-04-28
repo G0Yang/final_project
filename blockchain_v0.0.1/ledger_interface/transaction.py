@@ -24,15 +24,6 @@ class transaction(PyJSON):
         else:
             self.name = None
             
-        if 'T_Hash' in kwargv:
-            self.T_Hash = kwargv['T_Hash']
-        else:
-            self.T_Hash = self.setHash()
-
-        if 'size' in kwargv:
-            self.size = kwargv['size']
-        else:
-            self.size = len(str(self.to_dict()))
 
 
 
@@ -46,20 +37,10 @@ class transaction(PyJSON):
         self.setHash()
         return 
     
-    def setHash(self):
-        h = libhash()
-        dic = self.to_dict()
-        dic['T_Hash'] = None
-        dic['size'] = None
-        h.update(str(dic))
-        self.T_Hash = h.getsha256()
-        return True
 
     def getHash(self):
         h = libhash()
         dic = self.to_dict()
-        dic['T_Hash'] = None
-        dic['size'] = None
         h.update(str(dic))
         return h.getsha256()
 

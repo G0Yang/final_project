@@ -11,8 +11,8 @@ sys.path.append(os.path.dirname(__file__))
 from crypto.lib.libAES import libAES
 from chaincode.smartContract import *
 
-HOST = "chgoyang.iptime.org"
-#HOST = "192.168.0.38"
+#HOST = "chgoyang.iptime.org"
+HOST = "192.168.0.5"
 PORT = 14003
 
 def login(ID = '', PW = ''):

@@ -10,6 +10,8 @@ sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 sys.path.append(os.path.dirname(__file__))
 
+from core.makeLedger import * 
+
 '''
 logger = logging.getLogger()
 
@@ -47,9 +49,11 @@ class P2PServer(threading.Thread):
         self.ID = ID
         
         self.sock_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.HOST = "chgoyang.iptime.org"
+        #self.HOST = "chgoyang.iptime.org"
+        self.HOST = "192.168.0.5"
         self.PORT = 14101
         self.sock_server.sendto(str( {"TYPE" : "first connect", "ID" : self.ID} ).encode(), (self.HOST, self.PORT))
+        self.sock_server.settimeout(3)
 
         self.Q.put(self.sock_server)
         return
@@ -62,23 +66,28 @@ class P2PServer(threading.Thread):
                 argv, addr = self.sock_server.recvfrom(4096)
                 
                 argv = ast.literal_eval(argv.decode())
-                print(argv)
 
                 
 
                 if type(argv) == type(list()):
-                    for i, j in argv:
+                    print("합의 요청 보냄")
+                    agreeList = []
+                    for i, j in argv[1]:
                         print(i, j)
 
-                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "data" : self.ID} ).encode(), j)
+                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "data" : self.ID, "TX" : argv[0]} ).encode(), j)
                         data, addr = self.sock_server.recvfrom(4096)
                         data = data.decode()
                         print(data)
+                        time.sleep(0.1)
 
         
                         pass
                 else:            
+                    print("합의 요청 받음")
                     print(type(addr),addr)
+                    print(type(argv), argv)
+
                     self.sock_server.sendto(str("잘 받111").encode(), addr)
 
 
@@ -126,19 +135,10 @@ class P2PHandler(threading.Thread): # client
 
                 if addr == self.ID:
                     print("합의 요청, ipList 받아오기")
-                    #sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-                    self.sock_server.sendto(str( {"TYPE" : "giveIpList", "ID" : self.ID} ).encode(), ("chgoyang.iptime.org", 14101))
+                    self.sock_server.sendto(str( {"TYPE" : "giveIpList", "ID" : self.ID, "TX" : argv} ).encode(), ("192.168.0.5", 14101))
 
+                    
 
-                    '''
-                    data, addr = self.sock_server.recvfrom(4096)
-                    ipList = ast.literal_eval(data.decode())
-
-                    for i, j in ipList:
-                        print(i, j)
-                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "ID" : self.ID} ).encode(), j)
-                        pass
-                    '''
 
 
             except Exception as e:
@@ -162,6 +162,8 @@ def P2P(argv, addr, sock):
 
         else:
             print(type(addr),addr)
+
+
 # 명령어를 받아들이는 소켓 서버 localhost
 class EventServer(threading.Thread): # server
     def __init__(self, Queue):

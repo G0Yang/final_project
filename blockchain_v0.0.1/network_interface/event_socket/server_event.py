@@ -121,7 +121,10 @@ class EventHandler(threading.Thread): # client
                             for i in self.threads:
                                 print("stop", i)
                                 i.stop()
+                                
+                    if argv['TYPE'] == 'exit':
 
+                        sys.exit()
 
 
                     # 현재 상태 확인

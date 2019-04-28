@@ -68,10 +68,12 @@ class P2PServer(threading.Thread):
                 else:            
                     print("합의 요청 받음")
                     print(type(addr),addr)
-                    print(type(argv))
-                    recvTX = ast.literal_eval(argv['TX'])
-                    dataHash = recvTX['T_Hash']
-                    tx = maketx(dataHash)
+                    print("argv :", type(argv))
+
+                    data = argv["TX"]
+                    dataHash = data['T_Hash']
+
+                    tx = maketx(data)
                     txHash = tx.getHash()
 
 
@@ -80,14 +82,14 @@ class P2PServer(threading.Thread):
                     result = dataHash == txHash
                     print(result)
 
-                    self.sock_server.sendto(str("잘 받111" + str(result)).encode(), addr)
+                    self.sock_server.sendto(str(result).encode(), addr)
 
 
                 pass
 
             
             except Exception as e:
-                print("class P2PServer def run")
+                print("class P2PServer def run Exception")
                 print(e)                
         return
 

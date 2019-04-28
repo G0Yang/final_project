@@ -146,6 +146,12 @@ class EventHandler(threading.Thread): # client
 
                         tx = maketx(fileDic)
                         data = tx.to_dict() # 생성된 트랜잭션 데이터 (딕셔너리)
+                        print()
+                        print()
+                        print()
+                        print()
+                        print()
+                        print("최초 생성 데이터 : ",data)
                         self.P2P_Q.put((data, self.Identity, None)) # 생성된 데이터를 별도 스레드로 넘겨 합의 알고리즘 수행
 
                         pass

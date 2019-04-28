@@ -69,8 +69,9 @@ class P2PServer(threading.Thread):
                     print("합의 요청 받음")
                     print(type(addr),addr)
                     print(type(argv))
-                    dataHash = argv['TX']['T_Hash']
-                    tx = maketx(argv['TX'])
+                    recvTX = ast.literal_eval(argv['TX'])
+                    dataHash = recvTX['T_Hash']
+                    tx = maketx(dataHash)
                     txHash = tx.getHash()
 
 
@@ -79,7 +80,7 @@ class P2PServer(threading.Thread):
                     result = dataHash == txHash
                     print(result)
 
-                    self.sock_server.sendto(str("잘 받111" + result).encode(), addr)
+                    self.sock_server.sendto(str("잘 받111" + str(result)).encode(), addr)
 
 
                 pass
@@ -113,7 +114,7 @@ class P2PHandler(threading.Thread): # client
         while self.running:
             try:
                 print('log : queue server start')
-                argv, addr, sock = self.Q.get()
+                data, addr, sock = self.Q.get()
                 
                 # addr == self.ID 이면 합의 요청
                 # else 합의 요청 반환
@@ -121,7 +122,7 @@ class P2PHandler(threading.Thread): # client
                 if addr == self.ID:
                     print("합의 요청, ipList 받아오기")
                     self.sock_server.sendto(str({"TYPE" : "giveIpList", "ID" : self.ID}).encode(), self.serverAddr)
-                    TX_Q.put(argv)
+                    TX_Q.put(data)
                     
 
                     

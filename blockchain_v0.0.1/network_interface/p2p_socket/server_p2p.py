@@ -12,33 +12,12 @@ sys.path.append(os.path.dirname(__file__))
 
 from core.makeLedger import * 
 
-'''
-logger = logging.getLogger()
+TX_Q = queue.Queue()
 
-def p2p(ID = ''):
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    host = HOST
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+s.connect(("8.8.8.8", 80))
+HOST = s.getsockname()[0]
 
-    sock.sendto(str(ID).encode(), (HOST, 9999)) # 정보 추가
-
-    data, addr = sock.recvfrom(1024)
-    print('client received: {} {}'.format(addr, data)) # 다른 노드 정보 받음
-
-    addr = ast.literal_eval(data.decode())
-
-    #file = open('2019학사일정.pdf', 'rb').read()
-    file = "11111111\n-----".encode('utf-8')
-
-    sock.sendto(file, addr) 
-
-    data, addr = sock.recvfrom(1024)
-
-    print('client received: {} {}'.format(addr, data))
-
-if __name__ == '__main__1':
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
-    p2p("id00125")
-'''
 
 class P2PServer(threading.Thread):
     def __init__(self, Queue, ID):
@@ -51,9 +30,9 @@ class P2PServer(threading.Thread):
         self.sock_server = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         #self.HOST = "chgoyang.iptime.org"
         self.HOST = "192.168.0.5"
+        #self.HOST = HOST
         self.PORT = 14101
         self.sock_server.sendto(str( {"TYPE" : "first connect", "ID" : self.ID} ).encode(), (self.HOST, self.PORT))
-        self.sock_server.settimeout(3)
 
         self.Q.put(self.sock_server)
         return
@@ -63,20 +42,23 @@ class P2PServer(threading.Thread):
             try:
                 print('log : P2P server start', (self.HOST, self.PORT))
 
-                argv, addr = self.sock_server.recvfrom(4096)
+                argv, addr = self.sock_server.recvfrom(1024*1024)
                 
                 argv = ast.literal_eval(argv.decode())
+
+                print("서버에서 받은 데이터", argv)
 
                 
 
                 if type(argv) == type(list()):
-                    print("합의 요청 보냄")
+                    tx = TX_Q.get()
+                    print("합의 요청 보냄",  tx)
                     agreeList = []
-                    for i, j in argv[1]:
+                    for i, j in argv:
                         print(i, j)
 
-                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "data" : self.ID, "TX" : argv[0]} ).encode(), j)
-                        data, addr = self.sock_server.recvfrom(4096)
+                        self.sock_server.sendto(str( {"TYPE" : "sendAgree", "data" : self.ID, "TX" : tx} ).encode(), j)
+                        data, addr = self.sock_server.recvfrom(1024*1024)
                         data = data.decode()
                         print(data)
                         time.sleep(0.1)
@@ -87,17 +69,11 @@ class P2PServer(threading.Thread):
                     print("합의 요청 받음")
                     print(type(addr),addr)
                     print(type(argv), argv)
+                    tx = maketx(argv)
 
                     self.sock_server.sendto(str("잘 받111").encode(), addr)
 
 
-                #for i, j in argv:
-                    #print(i, j)
-                    #self.sock_server.sendto(str( {"TYPE" : "sendAgree", "ID" : self.ID} ).encode(), j)
-                    #pass
-
-
-                #self.Q.put((argv, addr, self.sock_server))
                 pass
 
             
@@ -120,6 +96,7 @@ class P2PHandler(threading.Thread): # client
         self.status = False
         self.ID = ID
         self.sock_server = self.Q.get()
+        self.serverAddr = ("192.168.0.5", 14101)
         
         print("Handler :", self.sock_server)
         return 
@@ -135,7 +112,9 @@ class P2PHandler(threading.Thread): # client
 
                 if addr == self.ID:
                     print("합의 요청, ipList 받아오기")
-                    self.sock_server.sendto(str( {"TYPE" : "giveIpList", "ID" : self.ID, "TX" : argv} ).encode(), ("192.168.0.5", 14101))
+                    self.sock_server.sendto(str({"TYPE" : "giveIpList", "ID" : self.ID}).encode(), self.serverAddr)
+                    TX_Q.put(argv)
+                    
 
                     
 

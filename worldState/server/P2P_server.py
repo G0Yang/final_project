@@ -153,9 +153,7 @@ class P2PHandler(threading.Thread): # client
 
                     if data['TYPE'] == "giveIpList":
                         print("log : return ipList")
-                        orderingList = []
-                        orderingList.append(data['TX'])
-                        orderingList.append(orderingBindList(self.ipList, data['ID']))
+                        orderingList = orderingBindList(self.ipList, data['ID'])
                         self.sock.sendto(str(orderingList).encode(), addr)
                         print("orderingList 보내기 완료 :", orderingList)
                         continue
@@ -194,7 +192,7 @@ class P2PHandler(threading.Thread): # client
 
 
 
-if __name__ == '__main_1_':
+if __name__ == '__main__':
     try:
         threads = []
         Q = queue.Queue()

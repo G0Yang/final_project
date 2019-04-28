@@ -21,7 +21,7 @@ Q = queue.Queue()
 
 
 def main():
-    print("WS_run.pyc")
+    print("WS_run.py")
     threads = []
     
     threads.append(P2PServer(Q)) # 명령어 처리를 위한 Queue호출 및 순환 루틴

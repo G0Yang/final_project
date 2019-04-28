@@ -12,6 +12,9 @@ from crypto.lib.libAES import libAES
 from chaincode.smartContract import *
 
 #HOST = "chgoyang.iptime.org"
+#s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+#s.connect(("8.8.8.8", 80))
+#HOST = s.getsockname()[0]
 HOST = "192.168.0.5"
 PORT = 14003
 
@@ -86,7 +89,7 @@ if __name__ == '__main__':
     print()
     time.sleep(2)
     '''
-
+    
     print("logout")
     print("00124 :", logout("id00124"))
     print("00125 :", logout("id00125"))
@@ -94,6 +97,7 @@ if __name__ == '__main__':
     print("00127 :", logout("id00127"))
     print("00128 :", logout("id00128"))
     print("00129 :", logout("id00129"))
+
 
 if __name__ == '__main__1':  
     try:
